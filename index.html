@@ -1,1030 +1,168 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Omni Locker</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMNI LOCKER - Inteligência que Entrega</title>
+    <style>
+        :root {
+            --primary-blue: #00d2ff;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-white: #f8fafc;
+        }
 
-<style>
-  :root {
-    --bg:        #0a0c10;
-    --surface:   #13161d;
-    --surface2:  #1c2030;
-    --border:    #2a2f3f;
-    --accent:    #00e5ff;
-    --accent2:   #0099b3;
-    --danger:    #ff3b5c;
-    --success:   #00e096;
-    --warn:      #ffb300;
-    --text:      #e8eaf0;
-    --muted:     #6b7280;
-    --font-head: 'Bebas Neue', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
-    --radius:    14px;
-    --transition: 0.22s cubic-bezier(.4,0,.2,1);
-  }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        header {
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 210, 255, 0.2);
+        }
 
-  body {
-    font-family: var(--font-body);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    overflow: hidden;
-    position: relative;
-  }
+        .logo-container img {
+            height: 50px; /* Ajuste conforme o tamanho do seu logoMoser */
+        }
 
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(0,229,255,0.07) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 50% at 80% 90%, rgba(0,153,179,0.05) 0%, transparent 70%);
-    pointer-events: none; z-index: 0;
-  }
+        .container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-  body::after {
-    content: '';
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none; z-index: 0;
-  }
+        .hero-section {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            flex-wrap: wrap-reverse;
+            justify-content: center;
+        }
 
-  .header {
-    width: 100%; display: flex; align-items: center; justify-content: space-between;
-    padding: 18px 28px; border-bottom: 1px solid var(--border);
-    background: rgba(10,12,16,0.92); backdrop-filter: blur(12px);
-    position: relative; z-index: 10;
-  }
+        .hero-text {
+            flex: 1;
+            min-width: 300px;
+            text-align: left;
+        }
 
-  .logo { display: flex; align-items: center; gap: 12px; }
+        .hero-text h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #fff, var(--primary-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-  .logo-icon {
-    width: 40px; height: 40px; border: 2px solid var(--accent); border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    position: relative; overflow: hidden;
-  }
+        .hero-text p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin: 20px 0 40px 0;
+            line-height: 1.6;
+        }
 
-  .logo-icon::before {
-    content: ''; position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(0,229,255,0.15), transparent);
-  }
+        .btn-acesso {
+            display: inline-block;
+            padding: 18px 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--dark-bg);
+            background-color: var(--primary-blue);
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
 
-  .logo-icon svg { width: 22px; height: 22px; }
+        .btn-acesso:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 35px rgba(0, 210, 255, 0.6);
+            background-color: #33e0ff;
+        }
 
-  .logo-text { font-family: var(--font-head); font-size: 26px; letter-spacing: 2px; color: var(--text); line-height: 1; }
-  .logo-text span { color: var(--accent); }
+        .hero-image {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
 
-  /* ── STATUS BADGE ── */
-  .status-badge {
-    display: flex; align-items: center; gap: 8px; padding: 7px 14px;
-    border-radius: 999px; border: 1px solid; font-size: 13px; font-weight: 500;
-    letter-spacing: 0.5px; transition: var(--transition);
-  }
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            /* Um leve brilho azul atrás do robô para dar profundidade */
+            filter: drop-shadow(0 0 30px rgba(0, 210, 255, 0.3));
+            animation: floating 3s ease-in-out infinite;
+        }
 
-  /* online = ESP32 enviou heartbeat há menos de 2 min */
-  .status-badge.online  { border-color: var(--success); color: var(--success); background: rgba(0,224,150,0.08); }
-  /* offline = sem heartbeat / ainda verificando */
-  .status-badge.offline { border-color: var(--danger);  color: var(--danger);  background: rgba(255,59,92,0.08); }
-  /* checking = aguardando conexão com Supabase na inicialização */
-  .status-badge.checking { border-color: var(--warn); color: var(--warn); background: rgba(255,179,0,0.08); }
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
 
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-  .status-badge.online   .status-dot { animation: pulse-dot 2s ease-in-out infinite; }
-  .status-badge.checking .status-dot { animation: pulse-dot 0.8s ease-in-out infinite; }
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
 
-  @keyframes pulse-dot {
-    0%,100% { opacity: 1; transform: scale(1); }
-    50%      { opacity: 0.4; transform: scale(0.7); }
-  }
-
-  .app {
-    flex: 1; display: flex; align-items: center; justify-content: center;
-    width: 100%; padding: 24px 16px; position: relative; z-index: 1;
-  }
-
-  .screen {
-    display: none; flex-direction: column; align-items: center;
-    width: 100%; max-width: 420px; animation: fadeSlide .28s ease both;
-  }
-
-  .screen.active { display: flex; }
-
-  @keyframes fadeSlide {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .card {
-    width: 100%; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 20px; padding: 36px 32px; position: relative; overflow: hidden;
-  }
-
-  .card::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--accent2), var(--accent));
-  }
-
-  .screen-title {
-    font-family: var(--font-head); font-size: 34px; letter-spacing: 2px;
-    color: var(--text); margin-bottom: 6px; text-align: center; line-height: 1.1;
-  }
-
-  .screen-sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 28px; line-height: 1.5; }
-
-  .input-group { width: 100%; margin-bottom: 14px; position: relative; }
-
-  .input-group label {
-    display: block; font-size: 11px; font-weight: 600; letter-spacing: 1px;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
-  }
-
-  input[type="text"], input[type="tel"], input[type="number"], input[type="password"] {
-    width: 100%; height: 52px; background: var(--surface2); border: 1.5px solid var(--border);
-    border-radius: var(--radius); color: var(--text); font-family: var(--font-body);
-    font-size: 18px; font-weight: 500; padding: 0 18px; outline: none;
-    transition: var(--transition); letter-spacing: 1px;
-  }
-
-  input::placeholder { color: var(--muted); font-weight: 400; letter-spacing: 0; }
-  input:focus { border-color: var(--accent); background: rgba(0,229,255,0.04); box-shadow: 0 0 0 3px rgba(0,229,255,0.1); }
-  input.valid   { border-color: var(--success); }
-  input.invalid { border-color: var(--danger); }
-
-  #retToken { font-size: 32px; letter-spacing: 8px; text-align: center; font-weight: 600; }
-
-  .btn {
-    width: 100%; height: 56px; border: none; border-radius: var(--radius);
-    font-family: var(--font-head); font-size: 22px; letter-spacing: 2px;
-    cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; margin-bottom: 12px;
-  }
-
-  .btn::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0); transition: var(--transition); }
-  .btn:hover:not(:disabled)::after { background: rgba(255,255,255,0.07); }
-  .btn:active:not(:disabled) { transform: scale(0.98); }
-
-  .btn-primary   { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #000; }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid var(--border); }
-  .btn-ghost     { background: transparent; color: var(--muted); border: 1.5px solid var(--border); height: 46px; font-size: 17px; margin-top: 4px; }
-  .btn:disabled  { opacity: 0.35; cursor: not-allowed; }
-
-  .tamanhos-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 12px; }
-
-  .btn-tamanho {
-    border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--surface2);
-    color: var(--text); font-family: var(--font-head); letter-spacing: 1.5px; cursor: pointer;
-    transition: var(--transition); display: flex; flex-direction: column; align-items: center;
-    justify-content: center; padding: 14px 8px; font-size: 17px; line-height: 1.2;
-  }
-
-  .btn-tamanho:not(:disabled):hover { border-color: var(--accent); background: rgba(0,229,255,0.06); }
-  .btn-tamanho:disabled { opacity: 0.3; cursor: not-allowed; }
-  .btn-tamanho.ocupado  { border-color: rgba(255,59,92,0.4); background: rgba(255,59,92,0.06); color: var(--danger); }
-  .btn-tamanho .size-icon { font-size: 24px; margin-bottom: 6px; }
-
-  .msg {
-    width: 100%; padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 500;
-    margin-bottom: 14px; display: none; align-items: flex-start; gap: 10px; line-height: 1.5;
-  }
-
-  .msg.show  { display: flex; }
-  .msg-error { background: rgba(255,59,92,0.1);  border: 1px solid rgba(255,59,92,0.3);  color: #ff7096; }
-  .msg-warn  { background: rgba(255,179,0,0.1);  border: 1px solid rgba(255,179,0,0.3);  color: var(--warn); }
-  .msg-info  { background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.25); color: var(--accent); }
-
-  .loader-ring {
-    width: 80px; height: 80px; border: 4px solid var(--border); border-top-color: var(--accent);
-    border-radius: 50%; animation: spin 1s linear infinite; margin: 20px auto 28px;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .success-icon {
-    width: 80px; height: 80px; border-radius: 50%; background: rgba(0,224,150,0.12);
-    border: 3px solid var(--success); display: flex; align-items: center; justify-content: center;
-    margin: 20px auto 28px; animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
-  }
-
-  @keyframes pop {
-    from { transform: scale(0); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-
-  #telaOffline .card::before { background: linear-gradient(90deg, var(--danger), #ff6b8a); }
-
-  .attempt-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 16px; }
-  .attempt-dot  { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: var(--transition); }
-  .attempt-dot.used { background: var(--danger); }
-
-  .inactivity-bar { position: fixed; bottom: 0; left: 0; height: 3px; background: var(--accent); transition: width 1s linear; z-index: 100; }
-
-  .session-warn {
-    position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
-    background: var(--surface); border: 1px solid var(--warn); color: var(--warn);
-    border-radius: 999px; padding: 8px 20px; font-size: 13px; font-weight: 500;
-    z-index: 99; display: none; white-space: nowrap;
-  }
-
-  @media (max-height: 700px) {
-    .card { padding: 24px 24px; }
-    .screen-title { font-size: 28px; }
-    .btn { height: 50px; font-size: 19px; }
-  }
-</style>
+        @media (max-width: 768px) {
+            .hero-text { text-align: center; }
+            .hero-text h1 { font-size: 2.5rem; }
+            header { padding: 15px 20px; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- ── CABEÇALHO ── -->
-<div class="header">
-  <div class="logo">
-    <div class="logo-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round">
-        <rect x="3" y="11" width="18" height="11" rx="2"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        <circle cx="12" cy="16" r="1.5" fill="#00e5ff" stroke="none"/>
-      </svg>
+    <header>
+        <div class="logo-container">
+            <img src="LogoOmni.png" alt="Logo Moser">
+        </div>
+        <nav>
+            <a href="acessolocker.html" style="color: var(--primary-blue); text-decoration: none; font-weight: 500;">Entrar</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section class="hero-section">
+            <div class="hero-text">
+                <h1>OMNI LOCKER</h1>
+                <p>A solução inteligente e segura para a gestão de encomendas e lockers automatizados.</p>
+                
+                <a href="acessolocker.html" class="btn-acesso">
+                    ACESSAR MEU LOCKER
+                </a>
+            </div>
+
+            <div class="hero-image">
+                <img src="RoboOmni.png" alt="Mascote Omni Locker">
+            </div>
+        </section>
     </div>
-    <!-- ✅ Nome atualizado para OMNI LOCKER -->
-    <span class="logo-text">OMNI<span>LOCKER</span></span>
-  </div>
 
-  <!--
-    ✅ STATUS REAL DO ESP32
-    Começa como "checking" (amarelo) na inicialização.
-    Após conectar ao Supabase, lê o último heartbeat do ESP32:
-      • heartbeat < 2 min → ONLINE (verde)
-      • heartbeat > 2 min ou ausente → OFFLINE (vermelho)
-    O Realtime mantém atualizado em tempo real.
-  -->
-  <div id="statusBadge" class="status-badge checking">
-    <div class="status-dot"></div>
-    <span id="statusText">VERIFICANDO</span>
-  </div>
-</div>
+    <footer>
+        &copy; 2026 Moser Nutrição Animal - Divisão Tecnologia. Todos os direitos reservados.
+    </footer>
 
-<div class="app">
-
-  <div id="telaOffline" class="screen">
-    <div class="card">
-      <div class="screen-title">SISTEMA<br>INDISPONÍVEL</div>
-      <div class="screen-sub">O locker está offline.<br>Aguarde ou contate o suporte.</div>
-      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ff3b5c" stroke-width="1.5" style="display:block;margin:16px auto 24px">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2.5"/>
-      </svg>
-    </div>
-  </div>
-
-  <div id="telaInicio" class="screen active">
-    <div class="card">
-      <div class="screen-title">BEM-VINDO</div>
-      <div class="screen-sub">Selecione a operação desejada</div>
-      <button class="btn btn-primary"   onclick="iniciarFluxoEntrega()">📦 ENTREGAR</button>
-      <button class="btn btn-secondary" onclick="mudarTela('telaRetiradaToken')">🔑 RETIRAR COM TOKEN</button>
-    </div>
-  </div>
-
-  <div id="telaOpcoesEntregador" class="screen">
-    <div class="card">
-      <div class="screen-title">IDENTIFICAÇÃO</div>
-      <div class="screen-sub">Como você deseja se identificar?</div>
-      <button class="btn btn-primary"   onclick="mostrarNovoCadastro()">NOVO CADASTRO</button>
-      <button class="btn btn-secondary" onclick="mostrarBuscaTelefone()">JÁ SOU CADASTRADO</button>
-      <button class="btn btn-ghost"     onclick="finalizar()">← VOLTAR</button>
-    </div>
-  </div>
-
-  <div id="telaBuscaTelefone" class="screen">
-    <div class="card">
-      <div class="screen-title">SEU TELEFONE</div>
-      <div class="screen-sub">Digite o número cadastrado</div>
-      <div class="input-group">
-        <label>Telefone com DDD</label>
-        <input type="tel" id="buscaTelefone" placeholder="(XX) XXXXX-XXXX" maxlength="15" autocomplete="off">
-      </div>
-      <div id="msgErroBusca" class="msg msg-error">
-        <span>⚠</span><span id="msgErroBuscaTexto">Entregador não encontrado. Faça um novo cadastro.</span>
-      </div>
-      <button id="btnBuscarTel" class="btn btn-primary" onclick="buscarEntregador()" disabled>BUSCAR</button>
-      <button class="btn btn-ghost" onclick="mudarTela('telaOpcoesEntregador')">← VOLTAR</button>
-    </div>
-  </div>
-
-  <div id="telaEntregaId" class="screen">
-    <div class="card">
-      <div class="screen-title">CADASTRO</div>
-      <div class="screen-sub">Preencha seus dados para continuar</div>
-      <div class="input-group">
-        <label>Nome completo</label>
-        <input type="text" id="entNome" placeholder="Seu nome" autocomplete="off">
-      </div>
-      <div class="input-group">
-        <label>CPF</label>
-        <input type="tel" id="entCpf" placeholder="000.000.000-00" maxlength="14" autocomplete="off">
-      </div>
-      <div class="input-group">
-        <label>Telefone com DDD</label>
-        <input type="tel" id="entTelefone" placeholder="(XX) XXXXX-XXXX" maxlength="15" autocomplete="off">
-      </div>
-      <div id="msgErroId" class="msg msg-error">
-        <span>⚠</span><span id="msgErroIdTexto"></span>
-      </div>
-      <button id="btnConfirmaId" class="btn btn-primary" onclick="confirmarIdentificacao()" disabled>CONFIRMAR</button>
-      <button class="btn btn-ghost" onclick="mudarTela('telaOpcoesEntregador')">← VOLTAR</button>
-    </div>
-  </div>
-
-  <div id="telaEntregaCasa" class="screen">
-    <div class="card">
-      <div id="tituloCasa" class="screen-title">Nº DA CASA</div>
-      <div class="screen-sub">Digite o número da residência</div>
-      <div class="input-group">
-        <label>Número da casa</label>
-        <input type="number" id="entCasa" placeholder="Ex: 353" min="1" max="9999" autocomplete="off">
-      </div>
-      <div id="msgErroCasa" class="msg msg-error">
-        <span>⚠</span><span>Número de casa não autorizado neste locker.</span>
-      </div>
-      <button id="btnConfirmaCasa" class="btn btn-primary" onclick="confirmarCasa()" disabled>CONFIRMAR</button>
-      <button class="btn btn-ghost" onclick="finalizar()">← INÍCIO</button>
-    </div>
-  </div>
-
-  <div id="telaEntregaTamanho" class="screen">
-    <div class="card">
-      <div class="screen-title">TAMANHO</div>
-      <div class="screen-sub">Selecione o tamanho do pacote</div>
-      <div id="avisoOcupado" class="msg msg-warn">
-        <span>⚠</span><span>Locker ocupado. O morador precisa retirar a encomenda atual antes de uma nova entrega.</span>
-      </div>
-      <div class="tamanhos-grid">
-        <button class="btn-tamanho" id="btnPequeno" disabled><span class="size-icon">📦</span>PEQUENO</button>
-        <button class="btn-tamanho" id="btnMedio" onclick="verificarPortaLivre('medio')"><span class="size-icon">📦</span>MÉDIO</button>
-        <button class="btn-tamanho" id="btnGrande" disabled><span class="size-icon">📦</span>GRANDE</button>
-      </div>
-      <button class="btn btn-secondary" style="margin-top:4px" disabled>🍔 ENTREGA DE COMIDA</button>
-      <button class="btn btn-ghost" onclick="mudarTela('telaEntregaCasa')">← VOLTAR</button>
-    </div>
-  </div>
-
-  <div id="telaErroLivre" class="screen">
-    <div class="card">
-      <div class="screen-title">SEM VAGAS</div>
-      <div class="screen-sub">Não há portas disponíveis do tamanho selecionado.</div>
-      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ffb300" stroke-width="1.5" style="display:block;margin:16px auto 24px">
-        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/>
-      </svg>
-      <button class="btn btn-primary" onclick="prepararTelaTamanho()">TENTAR NOVAMENTE</button>
-      <button class="btn btn-ghost"   onclick="finalizar()">← INÍCIO</button>
-    </div>
-  </div>
-
-  <div id="telaAguardandoAcao" class="screen">
-    <div class="card" style="text-align:center">
-      <div class="screen-title" id="tituloAguardando">ABRINDO<br>PORTA</div>
-      <div class="loader-ring"></div>
-      <div class="screen-sub" id="subAguardando">Insira a encomenda e <strong style="color:var(--text)">feche a porta</strong> do locker.</div>
-    </div>
-  </div>
-
-  <div id="telaEntregaRealizada" class="screen">
-    <div class="card" style="text-align:center">
-      <div class="screen-title">ENTREGA<br>REALIZADA</div>
-      <div class="success-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00e096" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-      </div>
-      <div class="screen-sub">Morador notificado via <strong style="color:var(--text)">WhatsApp</strong> com o token de retirada.</div>
-      <button class="btn btn-primary" onclick="finalizar()">FINALIZAR</button>
-    </div>
-  </div>
-
-  <div id="telaRetiradaToken" class="screen">
-    <div class="card">
-      <div class="screen-title">TOKEN DE<br>RETIRADA</div>
-      <div class="screen-sub">Digite o código de 6 dígitos recebido</div>
-      <div class="input-group">
-        <label>Código de acesso</label>
-        <input type="number" id="retToken" placeholder="000000" maxlength="6" autocomplete="off">
-      </div>
-      <div class="attempt-dots">
-        <div class="attempt-dot" id="dot0"></div>
-        <div class="attempt-dot" id="dot1"></div>
-        <div class="attempt-dot" id="dot2"></div>
-      </div>
-      <div id="msgErroToken" class="msg msg-error">
-        <span>⚠</span><span id="msgErroTokenTexto">Token inválido.</span>
-      </div>
-      <div id="msgLockout" class="msg msg-error" style="display:none">
-        <span>🔒</span><span>Muitas tentativas. Aguarde <strong id="lockoutCount">60</strong>s.</span>
-      </div>
-      <button id="btnConfirmaRet" class="btn btn-primary" onclick="validarTokenERetirar()" disabled>CONFIRMAR</button>
-      <button class="btn btn-ghost" onclick="finalizar()">← INÍCIO</button>
-    </div>
-  </div>
-
-  <div id="telaRetiradaRealizada" class="screen">
-    <div class="card" style="text-align:center">
-      <div class="screen-title">RETIRADA<br>REALIZADA</div>
-      <div class="success-icon">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00e096" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-      </div>
-      <div class="screen-sub">Sua encomenda foi retirada com sucesso.</div>
-      <button class="btn btn-primary" onclick="finalizar()">FINALIZAR</button>
-    </div>
-  </div>
-
-</div>
-
-<div class="inactivity-bar" id="inactivityBar" style="width:100%"></div>
-<div class="session-warn" id="sessionWarn">⏱ Sessão encerrando em <strong id="sessionCountdown">10</strong>s</div>
-
-<script>
-// ============================================================
-// CONFIGURAÇÃO
-// ============================================================
-const CONFIG = {
-  SUPABASE_URL:      "https://pmqdkhyvghcpvdkafuot.supabase.co",
-  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtcWRraHl2Z2hjcHZka2FmdW90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY2NjY0MzMsImV4cCI6MjA5MjI0MjQzM30.E7Ej0yQ62taj-pQ9wxeZepzadEEBdrx6YgVblyxsN1k",
-
-  URL_ENTREGA:   "https://pmqdkhyvghcpvdkafuot.supabase.co/functions/v1/processar-entrega",
-  URL_NOTIFICAR: "https://pmqdkhyvghcpvdkafuot.supabase.co/functions/v1/notificar-morador",
-  URL_RETIRADA:  "https://pmqdkhyvghcpvdkafuot.supabase.co/functions/v1/processar-retirada",
-  URL_BUSCAR:    "https://pmqdkhyvghcpvdkafuot.supabase.co/functions/v1/buscar-entregador",
-
-  CASAS_PERMITIDAS:     ["353"],
-  INATIVIDADE_MS:       60000,
-  AVISO_INATIVIDADE:    10000,
-  MAX_TENTATIVAS_TOKEN: 3,
-  LOCKOUT_SEGUNDOS:     60,
-
-  // Tempo máximo sem heartbeat para considerar offline (2 minutos)
-  HEARTBEAT_TIMEOUT_MS: 120000,
-};
-
-// ============================================================
-// HELPER — headers de autorização para Edge Functions
-// ============================================================
-function fetchEdge(url, options = {}) {
-  return fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type":  "application/json",
-      "Authorization": `Bearer ${CONFIG.SUPABASE_ANON_KEY}`,
-      "apikey":        CONFIG.SUPABASE_ANON_KEY,
-      ...(options.headers || {}),
-    },
-  });
-}
-
-// ============================================================
-// ESTADO
-// ============================================================
-let estado = {
-  fluxo: "", entregador: null, tamanho: "",
-  tentativasToken: 0, emLockout: false,
-  lockoutSegundos: 0, aguardandoFechadura: false,
-};
-
-let timerInatividade, timerAviso;
-let supabaseClient = null;
-let realtimeChannel = null;
-
-// ============================================================
-// STATUS DO ESP32
-// Lógica: o ESP32 envia heartbeat a cada 60s gravando
-// ultima_vez_online na tabela locker_status.
-// Se o último heartbeat tiver mais de 2 min → OFFLINE.
-// ============================================================
-function verificarStatusESP32(ultimaVezOnline) {
-  if (!ultimaVezOnline) return false;
-  const diff = Date.now() - new Date(ultimaVezOnline).getTime();
-  return diff < CONFIG.HEARTBEAT_TIMEOUT_MS;
-}
-
-function atualizarStatusBadge(online) {
-  const badge = document.getElementById('statusBadge');
-  const texto = document.getElementById('statusText');
-
-  if (online) {
-    badge.className = 'status-badge online';
-    texto.textContent = 'ONLINE';
-  } else {
-    badge.className = 'status-badge offline';
-    texto.textContent = 'OFFLINE';
-  }
-}
-
-function atualizarStatusOffline(offline) {
-  atualizarStatusBadge(!offline);
-
-  if (offline) {
-    if (!document.getElementById('telaOffline').classList.contains('active')) {
-      mudarTela('telaOffline');
-    }
-  } else {
-    if (document.getElementById('telaOffline').classList.contains('active')) {
-      finalizar();
-    }
-  }
-}
-
-// ============================================================
-// SUPABASE — inicialização + status real + realtime
-// ============================================================
-async function iniciarSupabase() {
-  // Carrega biblioteca Supabase
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-  document.head.appendChild(script);
-  await new Promise(res => script.onload = res);
-
-  supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-
-  // ── 1. Verifica status ATUAL do ESP32 ao abrir a página ──
-  try {
-    const { data } = await supabaseClient
-      .from('locker_status')
-      .select('ultima_vez_online, porta_fechada')
-      .single();
-
-    const online = verificarStatusESP32(data?.ultima_vez_online);
-    atualizarStatusBadge(online);
-
-    // Se offline desde o início, mostra tela offline
-    if (!online) {
-      mudarTela('telaOffline');
-    }
-  } catch(e) {
-    // Sem conexão com Supabase — deixa como offline
-    atualizarStatusBadge(false);
-    console.warn("Erro ao checar status inicial:", e);
-  }
-
-  // ── 2. Realtime — mantém status atualizado em tempo real ──
-  realtimeChannel = supabaseClient
-    .channel('locker-status')
-    .on('postgres_changes', {
-      event: 'UPDATE', schema: 'public', table: 'locker_status'
-    }, payload => {
-      const { ultima_vez_online, porta_fechada } = payload.new;
-
-      const online = verificarStatusESP32(ultima_vez_online);
-      atualizarStatusOffline(!online);
-
-      // Porta fechada → avança o fluxo
-      if (porta_fechada === true && estado.aguardandoFechadura) {
-        estado.aguardandoFechadura = false;
-        aoPortaFechar();
-      }
-    })
-    .subscribe();
-
-  // ── 3. Verificação periódica local (fallback ao realtime) ──
-  // Rechecka o heartbeat a cada 30s para caso o realtime falhe
-  setInterval(async () => {
-    try {
-      const { data } = await supabaseClient
-        .from('locker_status')
-        .select('ultima_vez_online')
-        .single();
-
-      const online = verificarStatusESP32(data?.ultima_vez_online);
-      atualizarStatusOffline(!online);
-    } catch(e) {}
-  }, 30000);
-}
-
-// ============================================================
-// MÁSCARAS E VALIDAÇÃO
-// ============================================================
-function mascaraCPF(v) {
-  v = v.replace(/\D/g, "").slice(0, 11);
-  v = v.replace(/(\d{3})(\d)/, "$1.$2");
-  v = v.replace(/(\d{3})(\d)/, "$1.$2");
-  v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  return v;
-}
-
-function mascaraTelefone(v) {
-  v = v.replace(/\D/g, "").slice(0, 11);
-  v = v.replace(/^(\d{2})(\d)/, "($1) $2");
-  v = v.replace(/(\d)(\d{4})$/, "$1-$2");
-  return v;
-}
-
-function validarCPF(cpf) {
-  cpf = cpf.replace(/\D/g, "");
-  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-  let soma = 0, resto;
-  for (let i = 1; i <= 9; i++) soma += parseInt(cpf[i-1]) * (11 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  if (resto !== parseInt(cpf[9])) return false;
-  soma = 0;
-  for (let i = 1; i <= 10; i++) soma += parseInt(cpf[i-1]) * (12 - i);
-  resto = (soma * 10) % 11;
-  if (resto === 10 || resto === 11) resto = 0;
-  return resto === parseInt(cpf[10]);
-}
-
-function sanitizarTexto(str) { return str.replace(/[<>"'`\\]/g, "").trim().slice(0, 80); }
-
-// ============================================================
-// EVENT LISTENERS
-// ============================================================
-document.getElementById('entCpf').addEventListener('input', function(e) {
-  e.target.value = mascaraCPF(e.target.value);
-  e.target.className = e.target.value.replace(/\D/g,'').length === 11
-    ? (validarCPF(e.target.value) ? 'valid' : 'invalid') : '';
-  validarFormId();
-});
-
-document.getElementById('entTelefone').addEventListener('input', function(e) {
-  e.target.value = mascaraTelefone(e.target.value);
-  const d = e.target.value.replace(/\D/g,'');
-  e.target.className = d.length === 11 ? 'valid' : (d.length > 0 ? 'invalid' : '');
-  validarFormId();
-});
-
-document.getElementById('entNome').addEventListener('input', validarFormId);
-
-document.getElementById('buscaTelefone').addEventListener('input', function(e) {
-  e.target.value = mascaraTelefone(e.target.value);
-  document.getElementById('btnBuscarTel').disabled = e.target.value.replace(/\D/g,'').length !== 11;
-  document.getElementById('msgErroBusca').classList.remove('show');
-});
-
-document.getElementById('entCasa').addEventListener('input', function() {
-  document.getElementById('btnConfirmaCasa').disabled = this.value.length === 0;
-  document.getElementById('msgErroCasa').classList.remove('show');
-});
-
-document.getElementById('retToken').addEventListener('input', function() {
-  if (this.value.length > 6) this.value = this.value.slice(0, 6);
-  document.getElementById('btnConfirmaRet').disabled = this.value.length !== 6 || estado.emLockout;
-  document.getElementById('msgErroToken').classList.remove('show');
-});
-
-// ============================================================
-// INATIVIDADE
-// ============================================================
-function resetarTemporizador() {
-  clearTimeout(timerInatividade);
-  clearTimeout(timerAviso);
-  document.getElementById('sessionWarn').style.display = 'none';
-
-  const telaAtual = document.querySelector('.screen.active')?.id;
-  if (telaAtual === 'telaInicio' || telaAtual === 'telaOffline') return;
-
-  const total = CONFIG.INATIVIDADE_MS;
-  const aviso = CONFIG.AVISO_INATIVIDADE;
-
-  const bar = document.getElementById('inactivityBar');
-  bar.style.transition = 'none'; bar.style.width = '100%';
-  setTimeout(() => { bar.style.transition = `width ${total/1000}s linear`; bar.style.width = '0%'; }, 50);
-
-  timerAviso = setTimeout(() => {
-    document.getElementById('sessionWarn').style.display = 'block';
-    let s = Math.ceil(aviso / 1000);
-    document.getElementById('sessionCountdown').textContent = s;
-    const iv = setInterval(() => {
-      s--; document.getElementById('sessionCountdown').textContent = s;
-      if (s <= 0) clearInterval(iv);
-    }, 1000);
-  }, total - aviso);
-
-  timerInatividade = setTimeout(finalizar, total);
-}
-
-['mousemove','keypress','touchstart','click'].forEach(ev =>
-  document.addEventListener(ev, resetarTemporizador, { passive: true })
-);
-
-// ============================================================
-// NAVEGAÇÃO
-// ============================================================
-function mudarTela(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  resetarTemporizador();
-}
-
-function finalizar() {
-  ['entCasa','retToken','entNome','entCpf','entTelefone','buscaTelefone'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.value = ""; el.className = ""; }
-  });
-  ['btnConfirmaCasa','btnConfirmaRet','btnConfirmaId','btnBuscarTel'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.disabled = true;
-  });
-  ['msgErroCasa','msgErroBusca','msgErroId','msgErroToken'].forEach(id =>
-    document.getElementById(id)?.classList.remove('show')
-  );
-  estado.fluxo = ""; estado.tamanho = ""; estado.aguardandoFechadura = false;
-  document.getElementById('inactivityBar').style.width = '100%';
-  document.getElementById('sessionWarn').style.display = 'none';
-  mudarTela('telaInicio');
-}
-
-// ============================================================
-// FLUXO DE ENTREGA
-// ============================================================
-function iniciarFluxoEntrega() {
-  if (estado.entregador) {
-    document.getElementById('tituloCasa').textContent =
-      `OLÁ, ${sanitizarTexto(estado.entregador.nome).toUpperCase()}!\nNº DA CASA`;
-    mudarTela('telaEntregaCasa');
-  } else {
-    mudarTela('telaOpcoesEntregador');
-  }
-}
-
-function mostrarNovoCadastro()  { mudarTela('telaEntregaId'); }
-
-function mostrarBuscaTelefone() {
-  document.getElementById('buscaTelefone').value = '';
-  document.getElementById('btnBuscarTel').disabled = true;
-  document.getElementById('msgErroBusca').classList.remove('show');
-  mudarTela('telaBuscaTelefone');
-}
-
-function validarFormId() {
-  const nome = sanitizarTexto(document.getElementById('entNome').value);
-  const cpf  = document.getElementById('entCpf').value;
-  const tel  = document.getElementById('entTelefone').value.replace(/\D/g,"");
-  document.getElementById('btnConfirmaId').disabled =
-    !(nome.length > 2 && validarCPF(cpf) && tel.length === 11);
-}
-
-async function buscarEntregador() {
-  const tel     = document.getElementById('buscaTelefone').value.replace(/\D/g,"");
-  const btn     = document.getElementById('btnBuscarTel');
-  const msgErro = document.getElementById('msgErroBusca');
-
-  btn.disabled = true; btn.textContent = "BUSCANDO...";
-  msgErro.classList.remove('show');
-
-  try {
-    const { data, error } = await supabaseClient
-      .from('entregadores')
-      .select('id, nome, cpf, telefone')
-      .eq('telefone', tel)
-      .eq('ativo', true)
-      .maybeSingle();
-
-    if (error || !data) {
-      document.getElementById('msgErroBuscaTexto').textContent =
-        "Entregador não encontrado. Volte e selecione NOVO CADASTRO.";
-      msgErro.classList.add('show');
-    } else {
-      supabaseClient.from('entregadores')
-        .update({ ultimo_acesso: new Date().toISOString() })
-        .eq('id', data.id).then();
-
-      estado.entregador = {
-        nome:     sanitizarTexto(data.nome),
-        cpf:      data.cpf?.replace(/\D/g,""),
-        telefone: data.telefone?.replace(/\D/g,""),
-      };
-      document.getElementById('tituloCasa').textContent =
-        `OLÁ, ${estado.entregador.nome.toUpperCase()}!\nNº DA CASA`;
-      mudarTela('telaEntregaCasa');
-    }
-  } catch(e) {
-    document.getElementById('msgErroBuscaTexto').textContent = "Falha na conexão com o banco de dados.";
-    msgErro.classList.add('show');
-    console.error(e);
-  } finally {
-    btn.textContent = "BUSCAR";
-    btn.disabled = tel.length !== 11;
-  }
-}
-
-function confirmarIdentificacao() {
-  const nome = sanitizarTexto(document.getElementById('entNome').value);
-  const cpf  = document.getElementById('entCpf').value.replace(/\D/g,"");
-  const tel  = document.getElementById('entTelefone').value.replace(/\D/g,"");
-
-  if (!validarCPF(document.getElementById('entCpf').value)) {
-    document.getElementById('msgErroIdTexto').textContent = "CPF inválido. Verifique e tente novamente.";
-    document.getElementById('msgErroId').classList.add('show');
-    return;
-  }
-
-  estado.entregador = { nome, cpf, telefone: tel };
-  document.getElementById('tituloCasa').textContent = "Nº DA CASA";
-  mudarTela('telaEntregaCasa');
-}
-
-function confirmarCasa() {
-  const num = document.getElementById('entCasa').value.trim();
-  if (!CONFIG.CASAS_PERMITIDAS.includes(num)) {
-    document.getElementById('msgErroCasa').classList.add('show'); return;
-  }
-  document.getElementById('msgErroCasa').classList.remove('show');
-  prepararTelaTamanho();
-}
-
-async function prepararTelaTamanho() {
-  const btnMedio  = document.getElementById('btnMedio');
-  const avisoOcup = document.getElementById('avisoOcupado');
-
-  btnMedio.disabled = true;
-  btnMedio.innerHTML = '<span class="size-icon">⏳</span>Verificando...';
-
-  try {
-    const { data, error } = await supabaseClient
-      .from('portas').select('estado').eq('tamanho', 'medio').single();
-    if (error) throw error;
-
-    if (data?.estado === 'livre') {
-      btnMedio.disabled = false;
-      btnMedio.innerHTML = '<span class="size-icon">📦</span>MÉDIO';
-      btnMedio.className = 'btn-tamanho';
-      avisoOcup.classList.remove('show');
-    } else {
-      btnMedio.disabled = true;
-      btnMedio.innerHTML = '<span class="size-icon">🔒</span>OCUPADO';
-      btnMedio.className = 'btn-tamanho ocupado';
-      avisoOcup.classList.add('show');
-    }
-  } catch(e) {
-    btnMedio.innerHTML = '<span class="size-icon">⚠</span>ERRO';
-    console.error("Erro ao verificar porta:", e);
-  }
-
-  mudarTela('telaEntregaTamanho');
-}
-
-async function verificarPortaLivre(tamanho) {
-  try {
-    const { data, error } = await supabaseClient
-      .from('portas').select('estado').eq('tamanho', tamanho).single();
-    if (error) throw error;
-    data?.estado === 'livre' ? enviarComandoEntrega(tamanho) : mudarTela('telaErroLivre');
-  } catch(e) { mudarTela('telaErroLivre'); }
-}
-
-async function enviarComandoEntrega(tamanho) {
-  estado.fluxo = "entrega"; estado.tamanho = tamanho;
-  document.getElementById('tituloAguardando').textContent = "ABRINDO\nPORTA";
-  document.getElementById('subAguardando').innerHTML =
-    'Insira a encomenda e <strong style="color:var(--text)">feche a porta</strong> do locker.';
-  mudarTela('telaAguardandoAcao');
-
-  try {
-    const resp = await fetchEdge(CONFIG.URL_ENTREGA, {
-      method: "POST",
-      signal: AbortSignal.timeout(10000),
-      body: JSON.stringify({
-        tamanho,
-        casa:               document.getElementById('entCasa').value,
-        nomeEntregador:     estado.entregador.nome,
-        cpfEntregador:      estado.entregador.cpf,
-        telefoneEntregador: estado.entregador.telefone,
-      }),
-    });
-
-    const resultado = await resp.json();
-    if (resultado.success) {
-      iniciarMonitoramentoFechadura();
-    } else {
-      alert("Erro: " + (resultado.error || "desconhecido"));
-      prepararTelaTamanho();
-    }
-  } catch(e) {
-    alert("Falha na conexão."); prepararTelaTamanho();
-  }
-}
-
-// ============================================================
-// FLUXO DE RETIRADA
-// ============================================================
-function atualizarDots() {
-  for (let i = 0; i < 3; i++)
-    document.getElementById(`dot${i}`).className =
-      'attempt-dot' + (i < estado.tentativasToken ? ' used' : '');
-}
-
-async function validarTokenERetirar() {
-  if (estado.emLockout) return;
-  if (estado.tentativasToken >= CONFIG.MAX_TENTATIVAS_TOKEN) { iniciarLockout(); return; }
-
-  estado.fluxo = "retirada";
-  document.getElementById('tituloAguardando').textContent = "VERIFICANDO\nTOKEN";
-  document.getElementById('subAguardando').innerHTML = 'Validando código...';
-  mudarTela('telaAguardandoAcao');
-
-  try {
-    const resp = await fetchEdge(CONFIG.URL_RETIRADA, {
-      method: "POST",
-      signal: AbortSignal.timeout(10000),
-      body: JSON.stringify({ tokenInput: document.getElementById('retToken').value }),
-    });
-
-    const resultado = await resp.json();
-
-    if (resultado.success) {
-      estado.tentativasToken = 0; atualizarDots();
-      document.getElementById('tituloAguardando').textContent = "ABRINDO\nPORTA";
-      document.getElementById('subAguardando').innerHTML =
-        'Retire sua encomenda e <strong style="color:var(--text)">feche a porta</strong>.';
-      iniciarMonitoramentoFechadura();
-    } else {
-      estado.tentativasToken++; atualizarDots();
-      mudarTela('telaRetiradaToken');
-      document.getElementById('retToken').value = '';
-      document.getElementById('btnConfirmaRet').disabled = true;
-      const restantes = CONFIG.MAX_TENTATIVAS_TOKEN - estado.tentativasToken;
-      document.getElementById('msgErroTokenTexto').textContent = restantes > 0
-        ? `Token inválido. ${restantes} tentativa(s) restante(s).`
-        : "Token inválido. Última tentativa esgotada.";
-      document.getElementById('msgErroToken').classList.add('show');
-      if (estado.tentativasToken >= CONFIG.MAX_TENTATIVAS_TOKEN) setTimeout(iniciarLockout, 800);
-    }
-  } catch(e) {
-    mudarTela('telaRetiradaToken');
-    document.getElementById('msgErroTokenTexto').textContent = "Falha na conexão. Tente novamente.";
-    document.getElementById('msgErroToken').classList.add('show');
-  }
-}
-
-function iniciarLockout() {
-  estado.emLockout = true; estado.lockoutSegundos = CONFIG.LOCKOUT_SEGUNDOS;
-  document.getElementById('btnConfirmaRet').disabled = true;
-  document.getElementById('msgErroToken').classList.remove('show');
-  document.getElementById('msgLockout').style.display = 'flex';
-  mudarTela('telaRetiradaToken');
-
-  const iv = setInterval(() => {
-    estado.lockoutSegundos--;
-    document.getElementById('lockoutCount').textContent = estado.lockoutSegundos;
-    if (estado.lockoutSegundos <= 0) {
-      clearInterval(iv);
-      estado.emLockout = false; estado.tentativasToken = 0; atualizarDots();
-      document.getElementById('msgLockout').style.display = 'none';
-      document.getElementById('retToken').value = '';
-      document.getElementById('btnConfirmaRet').disabled = true;
-    }
-  }, 1000);
-}
-
-// ============================================================
-// MONITORAMENTO DA FECHADURA
-// ============================================================
-function iniciarMonitoramentoFechadura() {
-  estado.aguardandoFechadura = true;
-
-  const pollInterval = setInterval(async () => {
-    if (!estado.aguardandoFechadura) { clearInterval(pollInterval); return; }
-    try {
-      const { data } = await supabaseClient
-        .from('locker_status').select('porta_fechada').single();
-      if (data?.porta_fechada === true) {
-        clearInterval(pollInterval);
-        estado.aguardandoFechadura = false;
-        aoPortaFechar();
-      }
-    } catch(e) {}
-  }, 3000);
-}
-
-async function aoPortaFechar() {
-  if (estado.fluxo === "entrega") {
-    try {
-      await fetchEdge(CONFIG.URL_NOTIFICAR, {
-        method: "POST",
-        signal: AbortSignal.timeout(8000),
-        body: JSON.stringify({ tamanho: estado.tamanho }),
-      });
-    } catch(e) { console.warn("Falha ao notificar morador:", e); }
-    mudarTela('telaEntregaRealizada');
-  } else if (estado.fluxo === "retirada") {
-    mudarTela('telaRetiradaRealizada');
-  }
-}
-
-// ============================================================
-// INICIALIZAÇÃO
-// ============================================================
-window.addEventListener('DOMContentLoaded', async () => {
-  await iniciarSupabase();
-  resetarTemporizador();
-});
-</script>
 </body>
 </html>
