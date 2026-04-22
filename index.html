@@ -58,10 +58,12 @@
             min-width: 350px;
         }
 
-        /* ESTILO DO LOGO GRANDE NO CORPO */
+        /* ESTILO DO LOGO AJUSTADO (Maior, mais alto e mais à esquerda) */
         .logo-body {
-            width: 180px;
+            width: 270px; /* 50% maior que os 180px anteriores */
             height: auto;
+            margin-top: -50px;  /* Puxa para o alto */
+            margin-left: -30px; /* Puxa para a esquerda */
             margin-bottom: 30px;
             display: block;
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
@@ -135,11 +137,23 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        /* AJUSTES PARA CELULAR */
         @media (max-width: 768px) {
-            .hero-text { text-align: center; display: flex; flex-direction: column; align-items: center; }
+            .hero-text { 
+                text-align: center; 
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; 
+            }
             .hero-text h1 { font-size: 2.8rem; }
             header { padding: 10px 20px; }
-            .logo-body { width: 140px; }
+            
+            /* Remove as margens negativas no celular para não bugar a tela */
+            .logo-body { 
+                width: 200px; 
+                margin-top: 0; 
+                margin-left: 0; 
+            }
         }
     </style>
 </head>
