@@ -1,11 +1,9 @@
-html
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Smart Locker</title>
+<title>Omni Locker</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
@@ -86,21 +84,27 @@ html
   .logo-text { font-family: var(--font-head); font-size: 26px; letter-spacing: 2px; color: var(--text); line-height: 1; }
   .logo-text span { color: var(--accent); }
 
+  /* ── STATUS BADGE ── */
   .status-badge {
     display: flex; align-items: center; gap: 8px; padding: 7px 14px;
     border-radius: 999px; border: 1px solid; font-size: 13px; font-weight: 500;
     letter-spacing: 0.5px; transition: var(--transition);
   }
 
+  /* online = ESP32 enviou heartbeat há menos de 2 min */
   .status-badge.online  { border-color: var(--success); color: var(--success); background: rgba(0,224,150,0.08); }
+  /* offline = sem heartbeat / ainda verificando */
   .status-badge.offline { border-color: var(--danger);  color: var(--danger);  background: rgba(255,59,92,0.08); }
+  /* checking = aguardando conexão com Supabase na inicialização */
+  .status-badge.checking { border-color: var(--warn); color: var(--warn); background: rgba(255,179,0,0.08); }
 
   .status-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-  .status-badge.online .status-dot { animation: pulse-dot 2s ease-in-out infinite; }
+  .status-badge.online   .status-dot { animation: pulse-dot 2s ease-in-out infinite; }
+  .status-badge.checking .status-dot { animation: pulse-dot 0.8s ease-in-out infinite; }
 
   @keyframes pulse-dot {
     0%,100% { opacity: 1; transform: scale(1); }
-    50%      { opacity: 0.5; transform: scale(0.75); }
+    50%      { opacity: 0.4; transform: scale(0.7); }
   }
 
   .app {
@@ -152,7 +156,6 @@ html
   }
 
   input::placeholder { color: var(--muted); font-weight: 400; letter-spacing: 0; }
-
   input:focus { border-color: var(--accent); background: rgba(0,229,255,0.04); box-shadow: 0 0 0 3px rgba(0,229,255,0.1); }
   input.valid   { border-color: var(--success); }
   input.invalid { border-color: var(--danger); }
@@ -240,6 +243,7 @@ html
 </head>
 <body>
 
+<!-- ── CABEÇALHO ── -->
 <div class="header">
   <div class="logo">
     <div class="logo-icon">
@@ -249,11 +253,21 @@ html
         <circle cx="12" cy="16" r="1.5" fill="#00e5ff" stroke="none"/>
       </svg>
     </div>
-    <span class="logo-text">SMART<span>LOCKER</span></span>
+    <!-- ✅ Nome atualizado para OMNI LOCKER -->
+    <span class="logo-text">OMNI<span>LOCKER</span></span>
   </div>
-  <div id="statusBadge" class="status-badge online">
+
+  <!--
+    ✅ STATUS REAL DO ESP32
+    Começa como "checking" (amarelo) na inicialização.
+    Após conectar ao Supabase, lê o último heartbeat do ESP32:
+      • heartbeat < 2 min → ONLINE (verde)
+      • heartbeat > 2 min ou ausente → OFFLINE (vermelho)
+    O Realtime mantém atualizado em tempo real.
+  -->
+  <div id="statusBadge" class="status-badge checking">
     <div class="status-dot"></div>
-    <span id="statusText">ONLINE</span>
+    <span id="statusText">VERIFICANDO</span>
   </div>
 </div>
 
@@ -456,11 +470,13 @@ const CONFIG = {
   AVISO_INATIVIDADE:    10000,
   MAX_TENTATIVAS_TOKEN: 3,
   LOCKOUT_SEGUNDOS:     60,
+
+  // Tempo máximo sem heartbeat para considerar offline (2 minutos)
+  HEARTBEAT_TIMEOUT_MS: 120000,
 };
 
 // ============================================================
-// HELPER — adiciona headers de autorização em todas as
-// chamadas às Edge Functions do Supabase (corrige erro 401)
+// HELPER — headers de autorização para Edge Functions
 // ============================================================
 function fetchEdge(url, options = {}) {
   return fetch(url, {
@@ -488,9 +504,49 @@ let supabaseClient = null;
 let realtimeChannel = null;
 
 // ============================================================
-// SUPABASE REALTIME
+// STATUS DO ESP32
+// Lógica: o ESP32 envia heartbeat a cada 60s gravando
+// ultima_vez_online na tabela locker_status.
+// Se o último heartbeat tiver mais de 2 min → OFFLINE.
+// ============================================================
+function verificarStatusESP32(ultimaVezOnline) {
+  if (!ultimaVezOnline) return false;
+  const diff = Date.now() - new Date(ultimaVezOnline).getTime();
+  return diff < CONFIG.HEARTBEAT_TIMEOUT_MS;
+}
+
+function atualizarStatusBadge(online) {
+  const badge = document.getElementById('statusBadge');
+  const texto = document.getElementById('statusText');
+
+  if (online) {
+    badge.className = 'status-badge online';
+    texto.textContent = 'ONLINE';
+  } else {
+    badge.className = 'status-badge offline';
+    texto.textContent = 'OFFLINE';
+  }
+}
+
+function atualizarStatusOffline(offline) {
+  atualizarStatusBadge(!offline);
+
+  if (offline) {
+    if (!document.getElementById('telaOffline').classList.contains('active')) {
+      mudarTela('telaOffline');
+    }
+  } else {
+    if (document.getElementById('telaOffline').classList.contains('active')) {
+      finalizar();
+    }
+  }
+}
+
+// ============================================================
+// SUPABASE — inicialização + status real + realtime
 // ============================================================
 async function iniciarSupabase() {
+  // Carrega biblioteca Supabase
   const script = document.createElement('script');
   script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
   document.head.appendChild(script);
@@ -498,30 +554,58 @@ async function iniciarSupabase() {
 
   supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
+  // ── 1. Verifica status ATUAL do ESP32 ao abrir a página ──
+  try {
+    const { data } = await supabaseClient
+      .from('locker_status')
+      .select('ultima_vez_online, porta_fechada')
+      .single();
+
+    const online = verificarStatusESP32(data?.ultima_vez_online);
+    atualizarStatusBadge(online);
+
+    // Se offline desde o início, mostra tela offline
+    if (!online) {
+      mudarTela('telaOffline');
+    }
+  } catch(e) {
+    // Sem conexão com Supabase — deixa como offline
+    atualizarStatusBadge(false);
+    console.warn("Erro ao checar status inicial:", e);
+  }
+
+  // ── 2. Realtime — mantém status atualizado em tempo real ──
   realtimeChannel = supabaseClient
     .channel('locker-status')
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'locker_status' }, payload => {
+    .on('postgres_changes', {
+      event: 'UPDATE', schema: 'public', table: 'locker_status'
+    }, payload => {
       const { ultima_vez_online, porta_fechada } = payload.new;
-      const offline = !ultima_vez_online || (Date.now() - new Date(ultima_vez_online).getTime() > 120000);
-      atualizarStatusOffline(offline);
+
+      const online = verificarStatusESP32(ultima_vez_online);
+      atualizarStatusOffline(!online);
+
+      // Porta fechada → avança o fluxo
       if (porta_fechada === true && estado.aguardandoFechadura) {
         estado.aguardandoFechadura = false;
         aoPortaFechar();
       }
     })
     .subscribe();
-}
 
-function atualizarStatusOffline(offline) {
-  const badge = document.getElementById('statusBadge');
-  const texto = document.getElementById('statusText');
-  if (offline) {
-    badge.className = 'status-badge offline'; texto.textContent = 'OFFLINE';
-    if (!document.getElementById('telaOffline').classList.contains('active')) mudarTela('telaOffline');
-  } else {
-    badge.className = 'status-badge online'; texto.textContent = 'ONLINE';
-    if (document.getElementById('telaOffline').classList.contains('active')) finalizar();
-  }
+  // ── 3. Verificação periódica local (fallback ao realtime) ──
+  // Rechecka o heartbeat a cada 30s para caso o realtime falhe
+  setInterval(async () => {
+    try {
+      const { data } = await supabaseClient
+        .from('locker_status')
+        .select('ultima_vez_online')
+        .single();
+
+      const online = verificarStatusESP32(data?.ultima_vez_online);
+      atualizarStatusOffline(!online);
+    } catch(e) {}
+  }, 30000);
 }
 
 // ============================================================
@@ -617,7 +701,10 @@ function resetarTemporizador() {
     document.getElementById('sessionWarn').style.display = 'block';
     let s = Math.ceil(aviso / 1000);
     document.getElementById('sessionCountdown').textContent = s;
-    const iv = setInterval(() => { s--; document.getElementById('sessionCountdown').textContent = s; if (s <= 0) clearInterval(iv); }, 1000);
+    const iv = setInterval(() => {
+      s--; document.getElementById('sessionCountdown').textContent = s;
+      if (s <= 0) clearInterval(iv);
+    }, 1000);
   }, total - aviso);
 
   timerInatividade = setTimeout(finalizar, total);
@@ -658,7 +745,8 @@ function finalizar() {
 // ============================================================
 function iniciarFluxoEntrega() {
   if (estado.entregador) {
-    document.getElementById('tituloCasa').textContent = `OLÁ, ${sanitizarTexto(estado.entregador.nome).toUpperCase()}!\nNº DA CASA`;
+    document.getElementById('tituloCasa').textContent =
+      `OLÁ, ${sanitizarTexto(estado.entregador.nome).toUpperCase()}!\nNº DA CASA`;
     mudarTela('telaEntregaCasa');
   } else {
     mudarTela('telaOpcoesEntregador');
@@ -678,7 +766,8 @@ function validarFormId() {
   const nome = sanitizarTexto(document.getElementById('entNome').value);
   const cpf  = document.getElementById('entCpf').value;
   const tel  = document.getElementById('entTelefone').value.replace(/\D/g,"");
-  document.getElementById('btnConfirmaId').disabled = !(nome.length > 2 && validarCPF(cpf) && tel.length === 11);
+  document.getElementById('btnConfirmaId').disabled =
+    !(nome.length > 2 && validarCPF(cpf) && tel.length === 11);
 }
 
 async function buscarEntregador() {
@@ -690,32 +779,29 @@ async function buscarEntregador() {
   msgErro.classList.remove('show');
 
   try {
-    // Busca os dados diretamente na tabela do Supabase (ignora o erro de CORS/Edge Function)
     const { data, error } = await supabaseClient
       .from('entregadores')
       .select('id, nome, cpf, telefone')
       .eq('telefone', tel)
       .eq('ativo', true)
-      .maybeSingle(); // <-- A mudança está aqui!
+      .maybeSingle();
 
     if (error || !data) {
-      document.getElementById('msgErroBuscaTexto').textContent = "Entregador não encontrado. Volte e selecione NOVO CADASTRO.";
+      document.getElementById('msgErroBuscaTexto').textContent =
+        "Entregador não encontrado. Volte e selecione NOVO CADASTRO.";
       msgErro.classList.add('show');
     } else {
-      // Opcional: Atualiza a data de último acesso no banco em segundo plano
       supabaseClient.from('entregadores')
         .update({ ultimo_acesso: new Date().toISOString() })
         .eq('id', data.id).then();
 
-      // Salva no estado do Totem
       estado.entregador = {
         nome:     sanitizarTexto(data.nome),
         cpf:      data.cpf?.replace(/\D/g,""),
         telefone: data.telefone?.replace(/\D/g,""),
       };
-      
-      // Avança a tela e mostra a mensagem de boas-vindas
-      document.getElementById('tituloCasa').textContent = `OLÁ, ${estado.entregador.nome.toUpperCase()}!\nNº DA CASA`;
+      document.getElementById('tituloCasa').textContent =
+        `OLÁ, ${estado.entregador.nome.toUpperCase()}!\nNº DA CASA`;
       mudarTela('telaEntregaCasa');
     }
   } catch(e) {
@@ -723,10 +809,11 @@ async function buscarEntregador() {
     msgErro.classList.add('show');
     console.error(e);
   } finally {
-    btn.textContent = "BUSCAR"; 
+    btn.textContent = "BUSCAR";
     btn.disabled = tel.length !== 11;
   }
 }
+
 function confirmarIdentificacao() {
   const nome = sanitizarTexto(document.getElementById('entNome').value);
   const cpf  = document.getElementById('entCpf').value.replace(/\D/g,"");
@@ -795,7 +882,8 @@ async function verificarPortaLivre(tamanho) {
 async function enviarComandoEntrega(tamanho) {
   estado.fluxo = "entrega"; estado.tamanho = tamanho;
   document.getElementById('tituloAguardando').textContent = "ABRINDO\nPORTA";
-  document.getElementById('subAguardando').innerHTML = 'Insira a encomenda e <strong style="color:var(--text)">feche a porta</strong> do locker.';
+  document.getElementById('subAguardando').innerHTML =
+    'Insira a encomenda e <strong style="color:var(--text)">feche a porta</strong> do locker.';
   mudarTela('telaAguardandoAcao');
 
   try {
@@ -828,7 +916,8 @@ async function enviarComandoEntrega(tamanho) {
 // ============================================================
 function atualizarDots() {
   for (let i = 0; i < 3; i++)
-    document.getElementById(`dot${i}`).className = 'attempt-dot' + (i < estado.tentativasToken ? ' used' : '');
+    document.getElementById(`dot${i}`).className =
+      'attempt-dot' + (i < estado.tentativasToken ? ' used' : '');
 }
 
 async function validarTokenERetirar() {
@@ -852,7 +941,8 @@ async function validarTokenERetirar() {
     if (resultado.success) {
       estado.tentativasToken = 0; atualizarDots();
       document.getElementById('tituloAguardando').textContent = "ABRINDO\nPORTA";
-      document.getElementById('subAguardando').innerHTML = 'Retire sua encomenda e <strong style="color:var(--text)">feche a porta</strong>.';
+      document.getElementById('subAguardando').innerHTML =
+        'Retire sua encomenda e <strong style="color:var(--text)">feche a porta</strong>.';
       iniciarMonitoramentoFechadura();
     } else {
       estado.tentativasToken++; atualizarDots();
@@ -902,7 +992,8 @@ function iniciarMonitoramentoFechadura() {
   const pollInterval = setInterval(async () => {
     if (!estado.aguardandoFechadura) { clearInterval(pollInterval); return; }
     try {
-      const { data } = await supabaseClient.from('locker_status').select('porta_fechada').single();
+      const { data } = await supabaseClient
+        .from('locker_status').select('porta_fechada').single();
       if (data?.porta_fechada === true) {
         clearInterval(pollInterval);
         estado.aguardandoFechadura = false;
