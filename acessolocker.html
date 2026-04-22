@@ -511,8 +511,27 @@ let realtimeChannel = null;
 // ============================================================
 function verificarStatusESP32(ultimaVezOnline) {
   if (!ultimaVezOnline) return false;
-  const diff = Date.now() - new Date(ultimaVezOnline).getTime();
-  return diff < CONFIG.HEARTBEAT_TIMEOUT_MS;
+
+  // Transforma a data do banco em milissegundos
+  const dataBanco = new Date(ultimaVezOnline).getTime();
+  
+  // Pega a hora atual também em milissegundos UTC
+  const agora = Date.now();
+
+  // Calcula a diferença absoluta (em milissegundos)
+  const diff = Math.abs(agora - dataBanco);
+
+  // Se a diferença for menor que 2 minutos OU menor que 3 horas e 2 minutos 
+  // (isso cobre o erro de fuso horário de Brasília)
+  const tresHorasEmMs = 3 * 60 * 60 * 1000;
+  const doisMinutosEmMs = CONFIG.HEARTBEAT_TIMEOUT_MS;
+
+  // Se a diferença estiver próxima de 0 (mesmo fuso) ou próxima de 3 horas (fuso Brasil)
+  if (diff < doisMinutosEmMs || Math.abs(diff - tresHorasEmMs) < doisMinutosEmMs) {
+    return true;
+  }
+  
+  return false;
 }
 
 function atualizarStatusBadge(online) {
