@@ -58,15 +58,18 @@
             min-width: 350px;
         }
 
-        /* ESTILO DO LOGO AJUSTADO (Maior, mais alto e mais à esquerda) */
+        /* ESTILO DO LOGO AJUSTADO (Movimentação Livre) */
         .logo-body {
-            width: 300px; /* 50% maior que os 180px anteriores */
+            width: 300px;
             height: auto;
-            margin-top: -100px;  /* Puxa para o alto */
-            margin-left: -60px; /* Puxa para a esquerda */
             margin-bottom: 30px;
             display: block;
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.1));
+            
+            /* O segredo para ignorar as bordas da caixa: */
+            position: relative;
+            top: -60px;  /* Quanto maior o negativo, mais sobe */
+            left: -70px; /* Quanto maior o negativo, mais vai pra esquerda */
         }
 
         .hero-text h1 {
