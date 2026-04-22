@@ -958,4 +958,70 @@ async function validarTokenERetirar() {
     }
   } catch(e) {
     mudarTela('telaRetiradaToken');
-    document.getEl
+    document.getElementById('msgErroTokenTexto').textContent = "Falha de conexão com o servidor.";
+    document.getElementById('msgErroToken').classList.add('show');
+  }
+}
+
+// ============================================================
+// FUNÇÕES COMPLEMENTARES (Faltavam no seu código)
+// ============================================================
+
+function iniciarLockout() {
+  estado.emLockout = true;
+  estado.lockoutSegundos = CONFIG.LOCKOUT_SEGUNDOS;
+  document.getElementById('btnConfirmaRet').disabled = true;
+  document.getElementById('msgErroToken').classList.remove('show');
+  
+  const msgLockout = document.getElementById('msgLockout');
+  msgLockout.style.display = 'flex';
+  const countEl = document.getElementById('lockoutCount');
+
+  const intv = setInterval(() => {
+    estado.lockoutSegundos--;
+    countEl.textContent = estado.lockoutSegundos;
+    if (estado.lockoutSegundos <= 0) {
+      clearInterval(intv);
+      estado.emLockout = false;
+      estado.tentativasToken = 0;
+      atualizarDots();
+      msgLockout.style.display = 'none';
+      document.getElementById('btnConfirmaRet').disabled = document.getElementById('retToken').value.length !== 6;
+    }
+  }, 1000);
+}
+
+function iniciarMonitoramentoFechadura() {
+  estado.aguardandoFechadura = true;
+  // O listener do Realtime (lá em cima) vai detectar quando a porta fechar
+  // e chamará a função aoPortaFechar() automaticamente.
+}
+
+async function aoPortaFechar() {
+  if (estado.fluxo === "entrega") {
+    // Se foi uma entrega, chama a Edge Function para notificar o morador pelo WhatsApp
+    try {
+      await fetchEdge(CONFIG.URL_NOTIFICAR, {
+        method: "POST",
+        body: JSON.stringify({ casa: document.getElementById('entCasa').value })
+      });
+    } catch(e) { 
+      console.error("Erro ao notificar", e); 
+    }
+    mudarTela('telaEntregaRealizada');
+
+  } else if (estado.fluxo === "retirada") {
+    // Se foi retirada, apenas finaliza
+    mudarTela('telaRetiradaRealizada');
+  }
+}
+
+// ============================================================
+// INICIALIZAÇÃO
+// ============================================================
+// Esta é a linha mais importante que estava faltando! Ela faz tudo começar.
+window.addEventListener('DOMContentLoaded', iniciarSupabase);
+
+</script>
+</body>
+</html>
