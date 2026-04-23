@@ -25,26 +25,25 @@
             position: relative;
         }
 
-        /* LOGO: Topo esquerdo no PC */
+        /* --- CONFIGURAÇÃO NOTEBOOK (COMO VOCÊ QUERIA) --- */
         .logo-body {
             position: absolute;
             top: 20px;
             left: 20px;
             width: 280px;
             height: auto;
-            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.15));
             z-index: 10;
         }
 
-        /* CONTEÚDO CENTRAL */
         .hero-section {
             display: flex;
+            flex-direction: row; /* Mantém horizontal no PC */
             align-items: center;
             justify-content: center;
             width: 100%;
             max-width: 1200px;
-            gap: 20px; /* Texto e Robô bem próximos agora */
-            padding-left: 120px; /* Empurrão para a direita apenas no PC */
+            gap: 30px; 
+            padding-left: 150px; /* Aquele "empurrão" para a direita que você gostou */
         }
 
         .hero-text {
@@ -58,7 +57,6 @@
             margin: 0;
             font-weight: 800;
             line-height: 0.9;
-            letter-spacing: -2px;
             background: linear-gradient(to right, #fff, var(--primary-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -68,47 +66,39 @@
             font-size: 1.3rem;
             color: #94a3b8;
             margin: 15px 0 0 0;
-            line-height: 1.4;
-        }
-
-        .hero-image {
-            flex: none;
         }
 
         .hero-image img {
             max-width: 100%;
             max-height: 65vh;
             object-fit: contain;
-            filter: drop-shadow(0 0 50px rgba(0, 210, 255, 0.25));
             animation: floating 4s ease-in-out infinite;
         }
 
         @keyframes floating {
-            0% { transform: translateY(0px); }
+            0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
-            100% { transform: translateY(0px); }
         }
 
-        /* CONFIGURAÇÃO EXCLUSIVA PARA CELULAR (IPHONE/ANDROID) */
+        /* --- AJUSTE EXCLUSIVO PARA IPHONE / CELULAR --- */
         @media (max-width: 768px) {
             body {
-                overflow-y: auto; /* Permite rolar se o robô for muito grande */
-                align-items: flex-start; /* Alinha no topo no celular */
-                padding-top: 80px;
+                overflow-y: auto;
+                align-items: flex-start; /* Alinha pelo topo para não embolar */
             }
 
             .logo-body {
-                width: 180px;
+                width: 200px;
                 left: 50%;
-                transform: translateX(-50%); /* Centraliza a logo no topo */
+                transform: translateX(-50%); /* Logo centralizada no topo */
                 top: 15px;
             }
 
             .hero-section {
-                flex-direction: column; /* Empilha: Robô em cima, Texto embaixo */
-                padding-left: 0; /* REMOVE o empurrão da direita que quebrava o mobile */
-                gap: 10px;
-                text-align: center;
+                flex-direction: column; /* No celular empilha */
+                padding-left: 0; /* Tira o empurrão do PC */
+                margin-top: 180px; /* AQUI: Desce o robô para não bater na logo */
+                gap: 20px;
             }
 
             .hero-text {
@@ -116,17 +106,10 @@
                 padding: 0 20px;
             }
 
-            .hero-text h1 {
-                font-size: 2.2rem; /* Diminui o texto para caber na largura do celular */
-                line-height: 1.1;
-            }
-
-            .hero-text p {
-                font-size: 1.1rem;
-            }
+            .hero-text h1 { font-size: 2.5rem; }
 
             .hero-image img {
-                max-height: 35vh; /* Robô menor no celular para sobrar espaço pro texto */
+                max-height: 40vh; /* Diminui um pouco o robô no celular */
             }
         }
     </style>
@@ -136,13 +119,13 @@
     <img src="LogoOmni.png" alt="Logo Omni Locker" class="logo-body">
 
     <section class="hero-section">
-        <div class="hero-image">
-            <img src="RoboOmni.png" alt="Mascote Omni Locker">
-        </div>
-
         <div class="hero-text">
             <h1>OMNI<br>LOCKER</h1>
             <p>Tecnologia avançada em armários inteligentes para condomínios e empresas.</p>
+        </div>
+
+        <div class="hero-image">
+            <img src="RoboOmni.png" alt="Mascote Omni Locker">
         </div>
     </section>
 
