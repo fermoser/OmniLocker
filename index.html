@@ -25,7 +25,7 @@
             position: relative;
         }
 
-        /* --- CONFIGURAÇÃO NOTEBOOK (COMO VOCÊ QUERIA) --- */
+        /* --- CONFIGURAÇÃO NOTEBOOK --- */
         .logo-body {
             position: absolute;
             top: 20px;
@@ -37,13 +37,13 @@
 
         .hero-section {
             display: flex;
-            flex-direction: row; /* Mantém horizontal no PC */
+            flex-direction: row; /* Texto Esquerda, Robô Direita */
             align-items: center;
             justify-content: center;
             width: 100%;
             max-width: 1200px;
             gap: 30px; 
-            padding-left: 150px; /* Aquele "empurrão" para a direita que você gostou */
+            padding-left: 150px; /* Mantém o empurrão para a direita no PC */
         }
 
         .hero-text {
@@ -80,25 +80,37 @@
             50% { transform: translateY(-20px); }
         }
 
-        /* --- AJUSTE EXCLUSIVO PARA IPHONE / CELULAR --- */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #475569;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 10px;
+        }
+
+        /* --- AJUSTE EXCLUSIVO PARA CELULAR --- */
         @media (max-width: 768px) {
             body {
                 overflow-y: auto;
-                align-items: flex-start; /* Alinha pelo topo para não embolar */
+                align-items: flex-start;
             }
 
             .logo-body {
                 width: 200px;
                 left: 50%;
-                transform: translateX(-50%); /* Logo centralizada no topo */
+                transform: translateX(-50%);
                 top: 15px;
             }
 
             .hero-section {
-                flex-direction: column; /* No celular empilha */
-                padding-left: 0; /* Tira o empurrão do PC */
-                margin-top: 180px; /* AQUI: Desce o robô para não bater na logo */
+                flex-direction: column-reverse; /* INVERTE: Robô vai para cima do texto */
+                padding-left: 0; 
+                margin-top: 160px; /* Espaço para não bater na logo */
                 gap: 20px;
+                margin-bottom: 80px; /* Espaço para não bater no footer */
             }
 
             .hero-text {
@@ -109,7 +121,7 @@
             .hero-text h1 { font-size: 2.5rem; }
 
             .hero-image img {
-                max-height: 40vh; /* Diminui um pouco o robô no celular */
+                max-height: 35vh; 
             }
         }
     </style>
@@ -128,6 +140,10 @@
             <img src="RoboOmni.png" alt="Mascote Omni Locker">
         </div>
     </section>
+
+    <footer>
+        &copy; 2026 OMNI LOCKER
+    </footer>
 
 </body>
 </html>
