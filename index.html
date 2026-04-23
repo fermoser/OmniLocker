@@ -19,42 +19,42 @@
             color: var(--text-white);
             height: 100vh;
             display: flex;
-            align-items: center; /* Centraliza verticalmente o conteúdo principal */
-            justify-content: center; /* Centraliza horizontalmente o conteúdo principal */
+            align-items: center; 
+            justify-content: center;
             overflow: hidden;
-            position: relative; /* Necessário para a logo se basear no corpo da página */
+            position: relative;
         }
 
-        /* LOGO: Fixa no topo esquerdo, ignorando o resto do alinhamento */
+        /* LOGO: Topo esquerdo no PC */
         .logo-body {
             position: absolute;
-            top: 5px;    /* Distância de "um dedo" do topo */
-            left: 20px;   /* Distância de "um dedo" da esquerda */
-            width: 350px; /* 30% maior que o original */
+            top: 20px;
+            left: 20px;
+            width: 280px;
             height: auto;
             filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.15));
             z-index: 10;
         }
 
-        /* CONTEÚDO CENTRAL: Robô e Texto */
+        /* CONTEÚDO CENTRAL */
         .hero-section {
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
             max-width: 1200px;
-            gap: 10px;
-            padding: 0 10px;
+            gap: 20px; /* Texto e Robô bem próximos agora */
+            padding-left: 120px; /* Empurrão para a direita apenas no PC */
         }
 
         .hero-text {
-            /* flex: 1; */
+            flex: none;
             text-align: left;
-            margin-left: 210px;
+            max-width: 450px;
         }
 
         .hero-text h1 {
-            font-size: 4rem;
+            font-size: 3.8rem;
             margin: 0;
             font-weight: 800;
             line-height: 0.9;
@@ -65,22 +65,19 @@
         }
 
         .hero-text p {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #94a3b8;
-            margin: 20px 0 0 0;
+            margin: 15px 0 0 0;
             line-height: 1.4;
-            max-width: 400px;
         }
 
         .hero-image {
-            flex: 1;
-            display: flex;
-            justify-content: center;
+            flex: none;
         }
 
         .hero-image img {
-            max-width: 110%; /* Robô levemente maior para equilibrar com a logo */
-            max-height: 70vh;
+            max-width: 100%;
+            max-height: 65vh;
             object-fit: contain;
             filter: drop-shadow(0 0 50px rgba(0, 210, 255, 0.25));
             animation: floating 4s ease-in-out infinite;
@@ -92,34 +89,45 @@
             100% { transform: translateY(0px); }
         }
 
-        footer {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-            text-align: center;
-            font-size: 0.8rem;
-            color: #334155;
-            letter-spacing: 2px;
-        }
-
-        /* AJUSTES PARA CELULAR */
+        /* CONFIGURAÇÃO EXCLUSIVA PARA CELULAR (IPHONE/ANDROID) */
         @media (max-width: 768px) {
-            .hero-section { 
-                flex-direction: column-reverse;
-                text-align: center;
-                gap: 20px;
+            body {
+                overflow-y: auto; /* Permite rolar se o robô for muito grande */
+                align-items: flex-start; /* Alinha no topo no celular */
+                padding-top: 80px;
             }
+
             .logo-body {
                 width: 180px;
                 left: 50%;
-                transform: translateX(-50%); /* Centraliza a logo no topo no celular */
+                transform: translateX(-50%); /* Centraliza a logo no topo */
+                top: 15px;
             }
-            .hero-text {
-                align-items: center;
+
+            .hero-section {
+                flex-direction: column; /* Empilha: Robô em cima, Texto embaixo */
+                padding-left: 0; /* REMOVE o empurrão da direita que quebrava o mobile */
+                gap: 10px;
                 text-align: center;
             }
-            .hero-text h1 { font-size: 3rem; }
-            .hero-text p { margin: 10px auto; }
+
+            .hero-text {
+                text-align: center;
+                padding: 0 20px;
+            }
+
+            .hero-text h1 {
+                font-size: 2.2rem; /* Diminui o texto para caber na largura do celular */
+                line-height: 1.1;
+            }
+
+            .hero-text p {
+                font-size: 1.1rem;
+            }
+
+            .hero-image img {
+                max-height: 35vh; /* Robô menor no celular para sobrar espaço pro texto */
+            }
         }
     </style>
 </head>
@@ -128,19 +136,15 @@
     <img src="LogoOmni.png" alt="Logo Omni Locker" class="logo-body">
 
     <section class="hero-section">
+        <div class="hero-image">
+            <img src="RoboOmni.png" alt="Mascote Omni Locker">
+        </div>
+
         <div class="hero-text">
             <h1>OMNI<br>LOCKER</h1>
             <p>Tecnologia avançada em armários inteligentes para condomínios e empresas.</p>
         </div>
-
-        <div class="hero-image">
-            <img src="RoboOmni.png" alt="Mascote Omni Locker">
-        </div>
     </section>
-
-    <footer>
-        &copy; 2026 OMNI LOCKER
-    </footer>
 
 </body>
 </html>
