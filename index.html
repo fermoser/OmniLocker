@@ -8,7 +8,6 @@
         :root {
             --primary-blue: #00d2ff;
             --dark-bg: #0f172a;
-            --card-bg: #1e293b;
             --text-white: #f8fafc;
         }
 
@@ -18,78 +17,69 @@
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--dark-bg);
             color: var(--text-white);
-            display: flex;
-            flex-direction: column;
             height: 100vh;
-            overflow: hidden;
-        }
-
-        .container {
-            flex: 1;
             display: flex;
-            align-items: flex-start; /* MUDANÇA: Agora alinha tudo no topo */
-            justify-content: center;
-            padding: 5vh 20px 0 20px; /* 5vh de espaço do topo da tela */
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            box-sizing: border-box;
+            align-items: center; /* Centraliza verticalmente o conteúdo principal */
+            justify-content: center; /* Centraliza horizontalmente o conteúdo principal */
+            overflow: hidden;
+            position: relative; /* Necessário para a logo se basear no corpo da página */
         }
 
+        /* LOGO: Fixa no topo esquerdo, ignorando o resto do alinhamento */
+        .logo-body {
+            position: absolute;
+            top: 20px;    /* Distância de "um dedo" do topo */
+            left: 20px;   /* Distância de "um dedo" da esquerda */
+            width: 286px; /* 30% maior que o original */
+            height: auto;
+            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.15));
+            z-index: 10;
+        }
+
+        /* CONTEÚDO CENTRAL: Robô e Texto */
         .hero-section {
             display: flex;
-            align-items: flex-start; /* Alinha o topo do texto com o topo do robô */
-            justify-content: space-between;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            gap: 40px;
+            max-width: 1200px;
+            gap: 60px;
+            padding: 0 40px;
         }
 
         .hero-text {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; 
-            max-width: 600px;
-            padding-top: 20px; /* Ajuste fino para alinhar com o "ombro" do robô */
-        }
-
-        .logo-body {
-            width: 286px; /* Aumentado em 30% (era 220px) */
-            height: auto;
-            margin-bottom: 10px; 
-            margin-left: -5px; /* Puxa levemente mais para a esquerda para alinhar visualmente */
-            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.15));
+            text-align: left;
         }
 
         .hero-text h1 {
-            font-size: 3.8rem; /* Aumentado um pouco para acompanhar a logo */
+            font-size: 4rem;
             margin: 0;
             font-weight: 800;
             line-height: 0.9;
-            letter-spacing: -1.5px;
+            letter-spacing: -2px;
             background: linear-gradient(to right, #fff, var(--primary-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .hero-text p {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             color: #94a3b8;
             margin: 20px 0 0 0;
-            line-height: 1.5;
-            max-width: 450px;
+            line-height: 1.4;
+            max-width: 400px;
         }
 
         .hero-image {
             flex: 1;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
         }
 
         .hero-image img {
-            max-width: 100%;
-            max-height: 65vh; /* Aumentado o limite do robô para ele acompanhar a logo */
+            max-width: 110%; /* Robô levemente maior para equilibrar com a logo */
+            max-height: 70vh;
             object-fit: contain;
             filter: drop-shadow(0 0 50px rgba(0, 210, 255, 0.25));
             animation: floating 4s ease-in-out infinite;
@@ -97,48 +87,55 @@
 
         @keyframes floating {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            50% { transform: translateY(-20px); }
             100% { transform: translateY(0px); }
         }
 
         footer {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
             text-align: center;
-            padding: 15px;
             font-size: 0.8rem;
             color: #334155;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            letter-spacing: 2px;
         }
 
+        /* AJUSTES PARA CELULAR */
         @media (max-width: 768px) {
-            .container { padding-top: 20px; }
             .hero-section { 
                 flex-direction: column-reverse;
-                text-align: center; 
+                text-align: center;
+                gap: 20px;
+            }
+            .logo-body {
+                width: 180px;
+                left: 50%;
+                transform: translateX(-50%); /* Centraliza a logo no topo no celular */
             }
             .hero-text {
                 align-items: center;
+                text-align: center;
             }
-            .hero-text h1 { font-size: 2.8rem; }
-            .logo-body { width: 220px; }
-            .hero-image img { max-height: 40vh; }
+            .hero-text h1 { font-size: 3rem; }
+            .hero-text p { margin: 10px auto; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <section class="hero-section">
-            <div class="hero-text">
-                <img src="LogoOmni.png" alt="Logo Omni Locker" class="logo-body">
-                <h1>OMNI<br>LOCKER</h1>
-                <p>Tecnologia avançada em armários inteligentes para condomínios e empresas.</p>
-            </div>
+    <img src="LogoOmni.png" alt="Logo Omni Locker" class="logo-body">
 
-            <div class="hero-image">
-                <img src="RoboOmni.png" alt="Mascote Omni Locker">
-            </div>
-        </section>
-    </div>
+    <section class="hero-section">
+        <div class="hero-text">
+            <h1>OMNI<br>LOCKER</h1>
+            <p>Tecnologia avançada em armários inteligentes para condomínios e empresas.</p>
+        </div>
+
+        <div class="hero-image">
+            <img src="RoboOmni.png" alt="Mascote Omni Locker">
+        </div>
+    </section>
 
     <footer>
         &copy; 2026 OMNI LOCKER
