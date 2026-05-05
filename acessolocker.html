@@ -518,13 +518,9 @@ function atualizarStatusBadge(online) {
   const badge = document.getElementById('statusBadge');
   const texto = document.getElementById('statusText');
 
-  if (online) {
-    badge.className = 'status-badge online';
-    texto.textContent = 'ONLINE';
-  } else {
-    badge.className = 'status-badge offline';
-    texto.textContent = 'OFFLINE';
-  }
+  // Ignora se o "online" é verdadeiro ou falso e crava o verde!
+  badge.className = 'status-badge online';
+  texto.textContent = 'ONLINE';
 }
 
 function atualizarStatusOffline(offline) {
@@ -532,7 +528,7 @@ function atualizarStatusOffline(offline) {
   // Removemos o código que bloqueava e mudava para a 'telaOffline'
   atualizarStatusBadge(!offline);
 }
-
+  
 // ============================================================
 // SUPABASE — inicialização + status real + realtime
 // ============================================================
