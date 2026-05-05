@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <script type="module">
+<!-- Rastreador de Visitas (Analytics) -->
+<script type="module">
   import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics/dist/index.mjs';
   inject();
 </script>
-  <script type="module">
+
+<!-- Rastreador de Velocidade (Speed Insights) -->
+<script type="module">
   import { injectSpeedInsights } from 'https://cdn.jsdelivr.net/npm/@vercel/speed-insights/dist/index.mjs';
   injectSpeedInsights();
 </script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Omni Locker</title>
@@ -182,6 +186,20 @@
   .btn-ghost     { background: transparent; color: var(--muted); border: 1.5px solid var(--border); height: 46px; font-size: 17px; margin-top: 4px; }
   .btn:disabled  { opacity: 0.35; cursor: not-allowed; }
 
+  .tamanhos-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 12px; }
+
+  .btn-tamanho {
+    border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--surface2);
+    color: var(--text); font-family: var(--font-head); letter-spacing: 1.5px; cursor: pointer;
+    transition: var(--transition); display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 14px 8px; font-size: 17px; line-height: 1.2;
+  }
+
+  .btn-tamanho:not(:disabled):hover { border-color: var(--accent); background: rgba(0,229,255,0.06); }
+  .btn-tamanho:disabled { opacity: 0.3; cursor: not-allowed; }
+  .btn-tamanho.ocupado  { border-color: rgba(255,59,92,0.4); background: rgba(255,59,92,0.06); color: var(--danger); }
+  .btn-tamanho .size-icon { font-size: 24px; margin-bottom: 6px; }
+
   .msg {
     width: 100%; padding: 12px 16px; border-radius: 10px; font-size: 13px; font-weight: 500;
     margin-bottom: 14px; display: none; align-items: flex-start; gap: 10px; line-height: 1.5;
@@ -190,6 +208,7 @@
   .msg.show  { display: flex; }
   .msg-error { background: rgba(255,59,92,0.1);  border: 1px solid rgba(255,59,92,0.3);  color: #ff7096; }
   .msg-warn  { background: rgba(255,179,0,0.1);  border: 1px solid rgba(255,179,0,0.3);  color: var(--warn); }
+  .msg-info  { background: rgba(0,229,255,0.08); border: 1px solid rgba(0,229,255,0.25); color: var(--accent); }
 
   .loader-ring {
     width: 80px; height: 80px; border: 4px solid var(--border); border-top-color: var(--accent);
@@ -233,6 +252,7 @@
 </head>
 <body>
 
+<!-- ── CABEÇALHO ── -->
 <div class="header">
   <div class="logo">
     <div class="logo-icon">
@@ -245,6 +265,7 @@
     <span class="logo-text">OMNI<span>LOCKER</span></span>
   </div>
 
+  <!-- STATUS VISUAL DO ESP32 -->
   <div id="statusBadge" class="status-badge checking">
     <div class="status-dot"></div>
     <span id="statusText">VERIFICANDO</span>
@@ -253,6 +274,7 @@
 
 <div class="app">
 
+  <!-- TELA OFFLINE MANTIDA NO HTML POR SEGURANÇA, MAS NUNCA MAIS SERÁ ATIVADA -->
   <div id="telaOffline" class="screen">
     <div class="card">
       <div class="screen-title">SISTEMA<br>INDISPONÍVEL</div>
@@ -323,26 +345,43 @@
     </div>
   </div>
 
+  <div id="telaEntregaCasa" class="screen">
+    <div class="card">
+      <div id="tituloCasa" class="screen-title">Nº DA CASA</div>
+      <div class="screen-sub">Digite o número da residência</div>
+      <div class="input-group">
+        <label>Número da casa</label>
+        <input type="number" id="entCasa" placeholder="Ex: 353" min="1" max="9999" autocomplete="off">
+      </div>
+      <div id="msgErroCasa" class="msg msg-error">
+        <span>⚠</span><span>Número de casa não autorizado neste locker.</span>
+      </div>
+      <button id="btnConfirmaCasa" class="btn btn-primary" onclick="confirmarCasa()" disabled>CONFIRMAR</button>
+      <button class="btn btn-ghost" onclick="finalizar()">← INÍCIO</button>
+    </div>
+  </div>
+
   <div id="telaEntregaTamanho" class="screen">
     <div class="card">
-      <div class="screen-title">ABRIR LOCKER</div>
-      <div class="screen-sub">O locker está pronto para receber a sua encomenda.</div>
+      <div class="screen-title">TAMANHO</div>
+      <div class="screen-sub">Selecione o tamanho do pacote</div>
       <div id="avisoOcupado" class="msg msg-warn">
         <span>⚠</span><span>Locker ocupado. O morador precisa retirar a encomenda atual antes de uma nova entrega.</span>
       </div>
-      
-      <button id="btnPortaUnica" class="btn btn-primary" style="height: 80px; font-size: 26px; display: flex; align-items: center; justify-content: center; gap: 12px;" onclick="verificarPortaLivre('medio')" disabled>
-        <span style="font-size: 30px;">📦</span> ABRIR PORTA
-      </button>
-
-      <button class="btn btn-ghost" style="margin-top: 15px;" onclick="mudarTela('telaOpcoesEntregador')">← VOLTAR</button>
+      <div class="tamanhos-grid">
+        <button class="btn-tamanho" id="btnPequeno" disabled><span class="size-icon">📦</span>PEQUENO</button>
+        <button class="btn-tamanho" id="btnMedio" onclick="verificarPortaLivre('medio')"><span class="size-icon">📦</span>MÉDIO</button>
+        <button class="btn-tamanho" id="btnGrande" disabled><span class="size-icon">📦</span>GRANDE</button>
+      </div>
+      <button class="btn btn-secondary" style="margin-top:4px" disabled>🍔 ENTREGA DE COMIDA</button>
+      <button class="btn btn-ghost" onclick="mudarTela('telaEntregaCasa')">← VOLTAR</button>
     </div>
   </div>
 
   <div id="telaErroLivre" class="screen">
     <div class="card">
-      <div class="screen-title">LOCKER OCUPADO</div>
-      <div class="screen-sub">No momento a porta se encontra ocupada com outra encomenda.</div>
+      <div class="screen-title">SEM VAGAS</div>
+      <div class="screen-sub">Não há portas disponíveis do tamanho selecionado.</div>
       <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ffb300" stroke-width="1.5" style="display:block;margin:16px auto 24px">
         <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
         <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2.5"/>
@@ -434,9 +473,13 @@ const CONFIG = {
   MAX_TENTATIVAS_TOKEN: 3,
   LOCKOUT_SEGUNDOS:     60,
 
-  HEARTBEAT_TIMEOUT_MS: 120000,
+  // AUMENTADO DE 2 PARA 15 MINUTOS (900.000 ms) DE TOLERÂNCIA
+  HEARTBEAT_TIMEOUT_MS: 900000,
 };
 
+// ============================================================
+// HELPER — headers de autorização para Edge Functions
+// ============================================================
 function fetchEdge(url, options = {}) {
   return fetch(url, {
     ...options,
@@ -449,6 +492,9 @@ function fetchEdge(url, options = {}) {
   });
 }
 
+// ============================================================
+// ESTADO
+// ============================================================
 let estado = {
   fluxo: "", entregador: null, tamanho: "",
   tentativasToken: 0, emLockout: false,
@@ -459,18 +505,13 @@ let timerInatividade, timerAviso;
 let supabaseClient = null;
 let realtimeChannel = null;
 
+// ============================================================
+// STATUS DO ESP32
+// ============================================================
 function verificarStatusESP32(ultimaVezOnline) {
   if (!ultimaVezOnline) return false;
-  const dataBanco = new Date(ultimaVezOnline).getTime();
-  const agora = Date.now();
-  const diff = Math.abs(agora - dataBanco);
-  const tresHorasEmMs = 3 * 60 * 60 * 1000;
-  const doisMinutosEmMs = CONFIG.HEARTBEAT_TIMEOUT_MS;
-
-  if (diff < doisMinutosEmMs || Math.abs(diff - tresHorasEmMs) < doisMinutosEmMs) {
-    return true;
-  }
-  return false;
+  const diff = Date.now() - new Date(ultimaVezOnline).getTime();
+  return diff < CONFIG.HEARTBEAT_TIMEOUT_MS;
 }
 
 function atualizarStatusBadge(online) {
@@ -487,19 +528,16 @@ function atualizarStatusBadge(online) {
 }
 
 function atualizarStatusOffline(offline) {
+  // AGORA ELE APENAS ATUALIZA A COR DA BOLINHA
+  // Removemos o código que bloqueava e mudava para a 'telaOffline'
   atualizarStatusBadge(!offline);
-  if (offline) {
-    if (!document.getElementById('telaOffline').classList.contains('active')) {
-      mudarTela('telaOffline');
-    }
-  } else {
-    if (document.getElementById('telaOffline').classList.contains('active')) {
-      finalizar();
-    }
-  }
 }
 
+// ============================================================
+// SUPABASE — inicialização + status real + realtime
+// ============================================================
 async function iniciarSupabase() {
+  // Carrega biblioteca Supabase
   const script = document.createElement('script');
   script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
   document.head.appendChild(script);
@@ -507,6 +545,7 @@ async function iniciarSupabase() {
 
   supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
+  // ── 1. Verifica status ATUAL do ESP32 ao abrir a página ──
   try {
     const { data } = await supabaseClient
       .from('locker_status')
@@ -515,20 +554,25 @@ async function iniciarSupabase() {
 
     const online = verificarStatusESP32(data?.ultima_vez_online);
     atualizarStatusBadge(online);
-    if (!online) mudarTela('telaOffline');
+    
+    // Removido o bloqueio inicial que enviava para telaOffline
   } catch(e) {
     atualizarStatusBadge(false);
+    console.warn("Erro ao checar status inicial:", e);
   }
 
+  // ── 2. Realtime — mantém status atualizado em tempo real ──
   realtimeChannel = supabaseClient
     .channel('locker-status')
     .on('postgres_changes', {
       event: 'UPDATE', schema: 'public', table: 'locker_status'
     }, payload => {
       const { ultima_vez_online, porta_fechada } = payload.new;
+
       const online = verificarStatusESP32(ultima_vez_online);
       atualizarStatusOffline(!online);
 
+      // Porta fechada → avança o fluxo
       if (porta_fechada === true && estado.aguardandoFechadura) {
         estado.aguardandoFechadura = false;
         aoPortaFechar();
@@ -536,16 +580,23 @@ async function iniciarSupabase() {
     })
     .subscribe();
 
+  // ── 3. Verificação periódica local (fallback ao realtime) ──
   setInterval(async () => {
     try {
       const { data } = await supabaseClient
-        .from('locker_status').select('ultima_vez_online').single();
+        .from('locker_status')
+        .select('ultima_vez_online')
+        .single();
+
       const online = verificarStatusESP32(data?.ultima_vez_online);
       atualizarStatusOffline(!online);
     } catch(e) {}
   }, 30000);
 }
 
+// ============================================================
+// MÁSCARAS E VALIDAÇÃO
+// ============================================================
 function mascaraCPF(v) {
   v = v.replace(/\D/g, "").slice(0, 11);
   v = v.replace(/(\d{3})(\d)/, "$1.$2");
@@ -578,6 +629,9 @@ function validarCPF(cpf) {
 
 function sanitizarTexto(str) { return str.replace(/[<>"'`\\]/g, "").trim().slice(0, 80); }
 
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
 document.getElementById('entCpf').addEventListener('input', function(e) {
   e.target.value = mascaraCPF(e.target.value);
   e.target.className = e.target.value.replace(/\D/g,'').length === 11
@@ -600,12 +654,20 @@ document.getElementById('buscaTelefone').addEventListener('input', function(e) {
   document.getElementById('msgErroBusca').classList.remove('show');
 });
 
+document.getElementById('entCasa').addEventListener('input', function() {
+  document.getElementById('btnConfirmaCasa').disabled = this.value.length === 0;
+  document.getElementById('msgErroCasa').classList.remove('show');
+});
+
 document.getElementById('retToken').addEventListener('input', function() {
   if (this.value.length > 6) this.value = this.value.slice(0, 6);
   document.getElementById('btnConfirmaRet').disabled = this.value.length !== 6 || estado.emLockout;
   document.getElementById('msgErroToken').classList.remove('show');
 });
 
+// ============================================================
+// INATIVIDADE
+// ============================================================
 function resetarTemporizador() {
   clearTimeout(timerInatividade);
   clearTimeout(timerAviso);
@@ -638,6 +700,9 @@ function resetarTemporizador() {
   document.addEventListener(ev, resetarTemporizador, { passive: true })
 );
 
+// ============================================================
+// NAVEGAÇÃO
+// ============================================================
 function mudarTela(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -645,14 +710,14 @@ function mudarTela(id) {
 }
 
 function finalizar() {
-  ['retToken','entNome','entCpf','entTelefone','buscaTelefone'].forEach(id => {
+  ['entCasa','retToken','entNome','entCpf','entTelefone','buscaTelefone'].forEach(id => {
     const el = document.getElementById(id);
     if (el) { el.value = ""; el.className = ""; }
   });
-  ['btnConfirmaRet','btnConfirmaId','btnBuscarTel'].forEach(id => {
+  ['btnConfirmaCasa','btnConfirmaRet','btnConfirmaId','btnBuscarTel'].forEach(id => {
     const el = document.getElementById(id); if (el) el.disabled = true;
   });
-  ['msgErroBusca','msgErroId','msgErroToken'].forEach(id =>
+  ['msgErroCasa','msgErroBusca','msgErroId','msgErroToken'].forEach(id =>
     document.getElementById(id)?.classList.remove('show')
   );
   estado.fluxo = ""; estado.tamanho = ""; estado.aguardandoFechadura = false;
@@ -661,9 +726,14 @@ function finalizar() {
   mudarTela('telaInicio');
 }
 
+// ============================================================
+// FLUXO DE ENTREGA
+// ============================================================
 function iniciarFluxoEntrega() {
   if (estado.entregador) {
-    prepararTelaTamanho(); // Alterado para pular direto para a porta
+    document.getElementById('tituloCasa').textContent =
+      `OLÁ, ${sanitizarTexto(estado.entregador.nome).toUpperCase()}!\nNº DA CASA`;
+    mudarTela('telaEntregaCasa');
   } else {
     mudarTela('telaOpcoesEntregador');
   }
@@ -716,8 +786,9 @@ async function buscarEntregador() {
         cpf:      data.cpf?.replace(/\D/g,""),
         telefone: data.telefone?.replace(/\D/g,""),
       };
-      
-      prepararTelaTamanho(); // Alterado para pular direto para a porta
+      document.getElementById('tituloCasa').textContent =
+        `OLÁ, ${estado.entregador.nome.toUpperCase()}!\nNº DA CASA`;
+      mudarTela('telaEntregaCasa');
     }
   } catch(e) {
     document.getElementById('msgErroBuscaTexto').textContent = "Falha na conexão com o banco de dados.";
@@ -741,40 +812,44 @@ function confirmarIdentificacao() {
   }
 
   estado.entregador = { nome, cpf, telefone: tel };
-  prepararTelaTamanho(); // Alterado para pular direto para a porta
+  document.getElementById('tituloCasa').textContent = "Nº DA CASA";
+  mudarTela('telaEntregaCasa');
+}
+
+function confirmarCasa() {
+  const num = document.getElementById('entCasa').value.trim();
+  if (!CONFIG.CASAS_PERMITIDAS.includes(num)) {
+    document.getElementById('msgErroCasa').classList.add('show'); return;
+  }
+  document.getElementById('msgErroCasa').classList.remove('show');
+  prepararTelaTamanho();
 }
 
 async function prepararTelaTamanho() {
-  const btnUnico = document.getElementById('btnPortaUnica');
+  const btnMedio  = document.getElementById('btnMedio');
   const avisoOcup = document.getElementById('avisoOcupado');
 
-  btnUnico.disabled = true;
-  btnUnico.innerHTML = '<span style="font-size: 30px;">⏳</span> Verificando...';
+  btnMedio.disabled = true;
+  btnMedio.innerHTML = '<span class="size-icon">⏳</span>Verificando...';
 
   try {
-    // Mantivemos o tamanho "medio" como você pediu, assim o Supabase continua inalterado
     const { data, error } = await supabaseClient
       .from('portas').select('estado').eq('tamanho', 'medio').single();
     if (error) throw error;
 
     if (data?.estado === 'livre') {
-      btnUnico.disabled = false;
-      btnUnico.innerHTML = '<span style="font-size: 30px;">📦</span> ABRIR PORTA';
-      btnUnico.className = 'btn btn-primary';
-      btnUnico.style.background = 'linear-gradient(135deg, var(--accent2), var(--accent))';
-      btnUnico.style.color = '#000';
+      btnMedio.disabled = false;
+      btnMedio.innerHTML = '<span class="size-icon">📦</span>MÉDIO';
+      btnMedio.className = 'btn-tamanho';
       avisoOcup.classList.remove('show');
     } else {
-      btnUnico.disabled = true;
-      btnUnico.innerHTML = '<span style="font-size: 30px;">🔒</span> OCUPADO';
-      btnUnico.className = 'btn btn-secondary';
-      btnUnico.style.background = 'rgba(255,59,92,0.06)';
-      btnUnico.style.borderColor = 'rgba(255,59,92,0.4)';
-      btnUnico.style.color = 'var(--danger)';
+      btnMedio.disabled = true;
+      btnMedio.innerHTML = '<span class="size-icon">🔒</span>OCUPADO';
+      btnMedio.className = 'btn-tamanho ocupado';
       avisoOcup.classList.add('show');
     }
   } catch(e) {
-    btnUnico.innerHTML = '⚠ ERRO';
+    btnMedio.innerHTML = '<span class="size-icon">⚠</span>ERRO';
     console.error("Erro ao verificar porta:", e);
   }
 
@@ -803,8 +878,7 @@ async function enviarComandoEntrega(tamanho) {
       signal: AbortSignal.timeout(10000),
       body: JSON.stringify({
         tamanho,
-        // Envia o número "353" automaticamente para a Edge Function não reclamar
-        casa:               CONFIG.CASAS_PERMITIDAS[0],
+        casa:               document.getElementById('entCasa').value,
         nomeEntregador:     estado.entregador.nome,
         cpfEntregador:      estado.entregador.cpf,
         telefoneEntregador: estado.entregador.telefone,
@@ -823,6 +897,9 @@ async function enviarComandoEntrega(tamanho) {
   }
 }
 
+// ============================================================
+// FLUXO DE RETIRADA
+// ============================================================
 function atualizarDots() {
   for (let i = 0; i < 3; i++)
     document.getElementById(`dot${i}`).className =
@@ -867,68 +944,66 @@ async function validarTokenERetirar() {
     }
   } catch(e) {
     mudarTela('telaRetiradaToken');
-    document.getElementById('msgErroTokenTexto').textContent = "Falha de conexão com o servidor.";
+    document.getElementById('msgErroTokenTexto').textContent = "Erro de conexão.";
     document.getElementById('msgErroToken').classList.add('show');
   }
 }
 
 function iniciarLockout() {
-  estado.emLockout = true; estado.lockoutSegundos = CONFIG.LOCKOUT_SEGUNDOS;
+  estado.emLockout = true;
+  estado.lockoutSegundos = CONFIG.LOCKOUT_SEGUNDOS;
   document.getElementById('btnConfirmaRet').disabled = true;
   document.getElementById('msgErroToken').classList.remove('show');
-  document.getElementById('msgLockout').style.display = 'flex';
-  mudarTela('telaRetiradaToken');
+  document.getElementById('msgLockout').classList.add('show');
 
   const iv = setInterval(() => {
     estado.lockoutSegundos--;
     document.getElementById('lockoutCount').textContent = estado.lockoutSegundos;
     if (estado.lockoutSegundos <= 0) {
       clearInterval(iv);
-      estado.emLockout = false; estado.tentativasToken = 0; atualizarDots();
-      document.getElementById('msgLockout').style.display = 'none';
-      document.getElementById('retToken').value = '';
-      document.getElementById('btnConfirmaRet').disabled = true;
+      estado.emLockout = false;
+      estado.tentativasToken = 0; atualizarDots();
+      document.getElementById('msgLockout').classList.remove('show');
+      if (document.getElementById('retToken').value.length === 6) {
+        document.getElementById('btnConfirmaRet').disabled = false;
+      }
     }
   }, 1000);
 }
 
+// ============================================================
+// FINALIZAÇÃO FÍSICA (FECHAR A PORTA)
+// ============================================================
 function iniciarMonitoramentoFechadura() {
   estado.aguardandoFechadura = true;
-
-  const pollInterval = setInterval(async () => {
-    if (!estado.aguardandoFechadura) { clearInterval(pollInterval); return; }
-    try {
-      const { data } = await supabaseClient
-        .from('locker_status').select('porta_fechada').single();
-      if (data?.porta_fechada === true) {
-        clearInterval(pollInterval);
-        estado.aguardandoFechadura = false;
-        aoPortaFechar();
-      }
-    } catch(e) {}
-  }, 3000);
+  setTimeout(() => {
+    if (estado.aguardandoFechadura) {
+      estado.aguardandoFechadura = false;
+      alert("Tempo limite de abertura excedido. Se a porta não abriu, verifique a placa.");
+      finalizar();
+    }
+  }, 45000); // Dá 45 segundos para a pessoa fechar
 }
 
 async function aoPortaFechar() {
   if (estado.fluxo === "entrega") {
+    mudarTela('telaEntregaRealizada');
     try {
       await fetchEdge(CONFIG.URL_NOTIFICAR, {
         method: "POST",
-        signal: AbortSignal.timeout(8000),
-        body: JSON.stringify({ tamanho: estado.tamanho }),
+        body: JSON.stringify({ tamanho: estado.tamanho })
       });
-    } catch(e) { console.warn("Falha ao notificar morador:", e); }
-    mudarTela('telaEntregaRealizada');
+    } catch(e) { console.error("Erro ao notificar:", e); }
   } else if (estado.fluxo === "retirada") {
     mudarTela('telaRetiradaRealizada');
   }
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
-  await iniciarSupabase();
-  resetarTemporizador();
-});
+// ============================================================
+// BOOT
+// ============================================================
+window.onload = iniciarSupabase;
+
 </script>
 </body>
 </html>
-
